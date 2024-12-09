@@ -7,7 +7,7 @@ import shortuuid
 
 class User(AbstractUser):
     username = models.CharField(unique=True, max_length=100)
-    email = models.EmailField(unique=True) 
+    email = models.EmailField(unique=True)
     full_name = models.CharField(max_length=100, null=True, blank=True)
     otp = models.CharField(max_length=100, null=True, blank=True)
     
@@ -18,11 +18,11 @@ class User(AbstractUser):
         return self.username
     
     def save(self, *args, **kwargs):
-        email_username, mobile = self.email.split("@")
+        email_username, _ = self.email.split("@")
         if not self.full_name:
             self.full_name = email_username
         if not self.username:
-            self.username = email_username  
+            self.username = email_username
         super(User, self).save(*args, **kwargs)
 
 
@@ -50,7 +50,8 @@ class Profile(models.Model):
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
-
+        print(f"Profile created for user: {instance.username}")
+        
 def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
 
@@ -148,10 +149,7 @@ class Notification(models.Model):
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        if self.post:
-            return f"{self.post.title} - {self.type}"
-        else:
-            return "Notification"
+        return f"{self.post.title} - {self.type}" if self.post else "Notification"
     
     class Meta:
         ordering = ["date"]
