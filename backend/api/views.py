@@ -50,6 +50,7 @@ class PostCategoryListAPIView(generics.ListAPIView):
 
 
 class PostListAPIView(generics.ListAPIView):
+    queryset = api_models.Post
     serializer_class = api_serializer.PostSerializer
     permission_classes = [AllowAny]
 
@@ -115,10 +116,10 @@ class PostCommentAPIView(APIView):
     )
     def post(self, request):
         # Get data from request.data (frontend)
-        post_id = request.data['post_id']
-        name = request.data['name']
-        email = request.data['email']
-        comment = request.data['comment']
+        post_id = request.data.get('post_id')
+        name = request.data.get("name")
+        email = request.data.get("email")
+        comment = request.data.get("comment")
 
         post = api_models.Post.objects.get(id=post_id)
 
@@ -163,7 +164,7 @@ class BookmarkPostAPIView(APIView):
         if bookmark:
             # Remove post from bookmark
             bookmark.delete()
-            return Response({"message": "Post Un-Bookmarked"}, status=status.HTTP_200_OK)
+            return Response({"message": "Post Bookmarked removed"}, status=status.HTTP_200_OK)
         else:
             api_models.Bookmark.objects.create(
                 user=user,

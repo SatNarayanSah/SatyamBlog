@@ -1,9 +1,10 @@
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 from api import models as api_models
-
-
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
@@ -57,7 +58,7 @@ class CategorySerializer(serializers.ModelSerializer):
     post_count = serializers.SerializerMethodField()
 
     def get_post_count(self, category):
-        return category.post_set.count()
+        return category.posts.count()
 
     class Meta:
         model = api_models.Category
@@ -65,6 +66,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = api_models.Comment
         fields = "__all__"
@@ -83,9 +85,17 @@ class NotificationSerializer(serializers.ModelSerializer):
 
 
 class PostSerializer(serializers.ModelSerializer):
+    comments = CommentSerializer(many=True)
     class Meta:
         model = api_models.Post
         fields = "__all__"
+    def __init__(self, *args, **kwargs):
+        super(PostSerializer, self).__init__(*args, **kwargs)
+        request = self.context.get("request")
+        if request and request.method == "POST":
+            self.Meta.depth = 0
+        else:
+            self.Meta.depth = 1
 
 
 class AuthorSerializer(serializers.Serializer):

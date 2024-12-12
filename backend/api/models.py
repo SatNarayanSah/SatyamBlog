@@ -13,12 +13,9 @@ class User(AbstractUser):
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
-
-    def __str__(self):
-        return self.username
     
     def save(self, *args, **kwargs):
-        email_username, _ = self.email.split("@")
+        email_username, mobile = self.email.split("@")
         if not self.full_name:
             self.full_name = email_username
         if not self.username:
@@ -72,8 +69,10 @@ class Category(models.Model):
             self.slug = slugify(self.title)
         super(Category, self).save(*args, **kwargs)
 
-    def post_count(self):
-        return Post.objects.filter(category=self).count()
+
+        def post_count(self):
+            return Post.objects.filter(Category = self).count()
+
     
 
 class Post(models.Model):
@@ -85,9 +84,10 @@ class Post(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True, related_name="posts" )
     title = models.CharField(max_length=200)
-    description = models.TextField(null=True, blank=True)
+    tags = models.CharField(max_length=200,null=True, blank=True)
+    description = models.TextField(null=False, blank=False)
     image = models.FileField(upload_to="image", null=True, blank=True)
     status = models.CharField(choices=STATUS, max_length=100, default="Active")
     view = models.IntegerField(default=0)
@@ -107,19 +107,22 @@ class Post(models.Model):
             self.slug = slugify(self.title) + "-" + shortuuid.uuid()[:2]
         super(Post, self).save(*args, **kwargs)
 
+    def comments(self):
+        return Comment.objects.filter(post=self)
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     email = models.CharField(max_length=100)
     comment = models.TextField(null=True, blank=True)
+    replay = models.TextField(null=True, blank=True)
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.post.title
     
     class Meta:
-        ordering = ["date"]
+        ordering = ["-date"]
         verbose_name_plural = "Comment"
 
 
@@ -132,7 +135,7 @@ class Bookmark(models.Model):
         return self.post.title
     
     class Meta:
-        ordering = ["date"]
+        ordering = ["-date"]
         verbose_name_plural = "Bookmark"
 
 
@@ -149,7 +152,11 @@ class Notification(models.Model):
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.post.title} - {self.type}" if self.post else "Notification"
+        if self.post:
+            return f"{self.post.title} - {self.type}" 
+        else:
+            return "Notification"
+            
     
     class Meta:
         ordering = ["date"]
