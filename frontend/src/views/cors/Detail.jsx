@@ -9,6 +9,7 @@ import { BsSymmetryVertical } from "react-icons/bs";
 import Toast from "../../plugin/Toast";
 import { create } from "zustand";
 import { CiHeart } from "react-icons/ci";
+import DOMPurify from "dompurify";
 
 function Detail() {
   const [post, setPost] = useState([]);
@@ -32,13 +33,22 @@ function Detail() {
     fetchPost();
   }, []);
 
+  const sanitizedHTML = DOMPurify.sanitize(post.description);
+
   const handleCreateCommentChanage = (event) => {
-    setCreateComment({
-      // ...createComment,
-      // [event.targe.namet]: event.target.value,
-    });
+    
+    const {name,value} = event.target;
+    console.log(name,value);
+    setCreateComment(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
   };
   const handleCreateCommentSubmit = async (event) => {
+    console.log(event);
+    console.log(createComment);
+
+
     event.preventDefault();
 
     const json = {
@@ -68,14 +78,14 @@ function Detail() {
   };
 
   const handleBookmarPost = async () => {
-    const json ={
-      user_id : 1,
-      post_id : post?.id,
-    }
+    const json = {
+      user_id: 1,
+      post_id: post?.id,
+    };
     const response = await apiInstance.post(`/post/bookmark-post/`, json);
     Toast("success", response.data.message);
     fetchPost();
-  }
+  };
 
   return (
     <>
@@ -155,21 +165,21 @@ function Detail() {
                 </ul>
                 <div className="flex items-center gap-5">
                   <div className="bg-blue-800 rounded-md ">
-                    <button 
-                    onClick={handleLikePost}
-                    className=" flex items-center gap-2 p-2 rounded-xl  text-white">
+                    <button
+                      onClick={handleLikePost}
+                      className=" flex items-center gap-2 p-2 rounded-xl  text-white"
+                    >
                       {" "}
-                      <FaThumbsUp />{" "}
-                      {post?.likes?.length}
+                      <FaThumbsUp /> {post?.likes?.length}
                     </button>
                   </div>
                   <div className="bg-green-800 rounded-md">
-                    <button 
-                    onClick={handleBookmarPost}
-                    className="p-2 flex items-center gap-2 text-white shadow-xl">
+                    <button
+                      onClick={handleBookmarPost}
+                      className="p-2 flex items-center gap-2 text-white shadow-xl"
+                    >
                       {" "}
-                      <FaBookmark />{" "}
-                      {post?.bookmark?.length} 1
+                      <FaBookmark /> {post?.bookmark?.length} 1
                     </button>
                   </div>
                 </div>
@@ -352,7 +362,7 @@ function Detail() {
                     </label>
                     <input
                       required
-                      value={createComment.full_name}
+                      value={setCreateComment.full_name}
                       name="full_name"
                       onChange={handleCreateCommentChanage}
                       type="text"
@@ -365,7 +375,7 @@ function Detail() {
                     </label>
                     <input
                       required
-                      value={createComment.email}
+                      value={setCreateComment.email}
                       name="email"
                       onChange={handleCreateCommentChanage}
                       type="email"
@@ -378,7 +388,7 @@ function Detail() {
                     </label>
                     <textarea
                       required
-                      value={createComment.comment}
+                      value={setCreateComment.comment}
                       name="comment"
                       onChange={handleCreateCommentChanage}
                       className="mt-1 w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm"

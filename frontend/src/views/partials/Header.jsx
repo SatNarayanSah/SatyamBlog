@@ -1,14 +1,20 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { FaUserPlus } from "react-icons/fa6";
-import { MdLogin } from "react-icons/md";
+import { TbLogout2 } from "react-icons/tb";
+import { MdDashboard, MdLogin } from "react-icons/md";
 import { CiSearch } from "react-icons/ci";
 import { TiArrowSortedDown } from "react-icons/ti";
 
-
-
+import { useAuthStore } from "../../store/Auth";
 
 function Header() {
+  // const [state, setState] = useState();
+  const [isLoggedIn, user] = useAuthStore((state) => [
+    state.isLoggedIn,
+    state.user,
+  ]);
+
   const [isOpen, setIsOpen] = useState(null);
 
   const toggleDropdown = (dropdown) => {
@@ -75,13 +81,13 @@ function Header() {
             </li>
             <li className="relative group">
               <span
-                onClick={() => toggleDropdown('Pages')}
+                onClick={() => toggleDropdown("Pages")}
                 className="cursor-pointer flex items-center hover:text-blue-400"
               >
                 Pages
                 <TiArrowSortedDown />
               </span>
-              {isOpen ==='Pages' && (
+              {isOpen === "Pages" && (
                 <ul className="absolute left-0 mt-2 bg-gray-700 text-sm rounded shadow-lg">
                   <li>
                     <Link
@@ -102,85 +108,100 @@ function Header() {
                 </ul>
               )}
             </li>
-            <li className="relative group">
-              <span
-                onClick={() => toggleDropdown('dashboard')}
-                className="cursor-pointer flex items-center hover:text-blue-400"
-              >
-                Dashboard
-                <TiArrowSortedDown />
-              </span>
-              {isOpen === 'dashboard' && (
-                <ul className="absolute left-0 mt-2  group-hover:block bg-gray-700 text-sm rounded shadow-lg">
-                  <li>
-                    <Link
-                      to="/dashboard"
-                      className="block px-4 py-2 hover:bg-gray-600"
+
+            <ul className="flex items-center gap-3">
+              {isLoggedIn() ? (
+                <>
+                  <li className="relative  ">
+                    <span
+                      onClick={() => toggleDropdown("dashboard")}
+                      className="cursor-pointer flex items-center hover:text-blue-400"
                     >
                       Dashboard
-                    </Link>
+                      <TiArrowSortedDown />
+                    </span>
                   </li>
-                  <li>
-                    <Link
-                      to="/posts"
-                      className="block px-4 py-2 hover:bg-gray-600"
-                    >
-                      Posts
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/add-post"
-                      className="block px-4 py-2 hover:bg-gray-600"
-                    >
-                      Add Post
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/comments"
-                      className="block px-4 py-2 hover:bg-gray-600"
-                    >
-                      Comments
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/notifications"
-                      className="block px-4 py-2 hover:bg-gray-600"
-                    >
-                      Notifications
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/profile"
-                      className="block px-4 py-2 hover:bg-gray-600"
-                    >
-                      Profile
-                    </Link>
-                  </li>
-                </ul>
+                  {isOpen === "dashboard" && (
+                    <ul className="absolute mt-60 -ml-3  group-hover:block bg-gray-700 text-sm rounded shadow-lg">
+                      <li>
+                        <Link
+                          to="/dashboard"
+                          className="block px-4 py-2 hover:bg-gray-600"
+                        >
+                          Dashboard
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/posts"
+                          className="block px-4 py-2 hover:bg-gray-600"
+                        >
+                          Posts
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/add-post"
+                          className="block px-4 py-2 hover:bg-gray-600"
+                        >
+                          Add Post
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/comments"
+                          className="block px-4 py-2 hover:bg-gray-600"
+                        >
+                          Comments
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/notifications"
+                          className="block px-4 py-2 hover:bg-gray-600"
+                        >
+                          Notifications
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/profile"
+                          className="block px-4 py-2 hover:bg-gray-600"
+                        >
+                          Profile
+                        </Link>
+                      </li>
+                    </ul>
+                  )}
+                  <Link
+                    to="/logout"
+                    className="bg-blue-500 text-white flex items-center gap-3 px-4 py-2 rounded hover:bg-blue-600"
+                  >
+                    <TbLogout2 />
+                    LogOut
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to="/register"
+                    className="bg-green-900 tracking-widest flex items-center gap-3 text-white px-4 py-2 rounded hover:bg-green-600"
+                  >
+                    <FaUserPlus />
+                    Register
+                  </Link>
+
+                  <Link
+                    to="/login"
+                    className="bg-blue-500 text-white flex items-center gap-3 px-4 py-2 rounded hover:bg-blue-600"
+                  >
+                    <MdLogin />
+                    Login
+                  </Link>
+                </>
               )}
-            </li>
-            <li>
-              <Link
-                to="/register"
-                className="bg-green-900 tracking-widest flex items-center gap-3 text-white px-4 py-2 rounded hover:bg-green-600"
-              >
-                <FaUserPlus />
-                Register
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/login"
-                className="bg-blue-500 text-white flex items-center gap-3 px-4 py-2 rounded hover:bg-blue-600"
-              >
-                <MdLogin />
-                Login
-              </Link>
-            </li>
+            </ul>
+            <li></li>
           </ul>
         </div>
       </nav>

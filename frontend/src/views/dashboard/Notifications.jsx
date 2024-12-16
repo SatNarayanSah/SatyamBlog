@@ -1,92 +1,144 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../partials/Header";
 import Footer from "../partials/Footer";
-import { Link } from "react-router-dom";
+import { IoChatboxEllipses, IoCheckmarkDoneOutline } from "react-icons/io5"; // Import icons
+import apiInstance from "../../utils/axios";
+import useUserData from "../../plugin/useUserData";
+import Toast from "../../plugin/Toast";
+import Moment from "../../plugin/Moment";
+import { FaBookmark, FaThumbsUp } from "react-icons/fa6";
 
 function Notifications() {
-    return (
-        <>
-            <Header />
-            <section className="pt-5 pb-5">
-                <div className="container">
-                    <div className="row mt-0 mt-md-4">
-                        <div className="col-lg-12 col-md-8 col-12">
-                            <div className="card mb-4">
-                                <div className="card-header d-lg-flex align-items-center justify-content-between">
-                                    <div className="mb-3 mb-lg-0">
-                                        <h3 className="mb-0">Notifications</h3>
-                                        <span>Manage all your notifications from here</span>
-                                    </div>
-                                </div>
-                                <div className="card-body">
-                                    <ul className="list-group list-group-flush">
-                                        <li className="list-group-item p-4 shadow rounded-3 mt-4">
-                                            <div className="d-flex">
-                                                <div className="ms-3 mt-2">
-                                                    <div className="d-flex align-items-center justify-content-between">
-                                                        <div>
-                                                            <h4 className="mb-0 fw-bold">
-                                                                <i className="bi bi-chat-left-quote-fill text-success "></i> New Comment
-                                                            </h4>
-                                                            <p className="mt-3">
-                                                                Monica FineGeh commented on your post <b>How to become a better django and react.js developer</b>
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="mt-2">
-                                                        <p className="mt-1">
-                                                            <span className="me-2 fw-bold">
-                                                                Date: <span className="fw-light">30/11/24</span>
-                                                            </span>
-                                                        </p>
-                                                        <p>
-                                                            <button class="btn btn-outline-secondary" type="button">
-                                                                Mark as Seen <i className="fas fa-check"></i>
-                                                            </button>
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
+  const [noti, setNoti] = useState([]);
+  const user_id = useUserData()?.user_id;
 
-                                        <li className="list-group-item p-4 shadow rounded-3 mt-4">
-                                            <div className="d-flex">
-                                                <div className="ms-3 mt-2">
-                                                    <div className="d-flex align-items-center justify-content-between">
-                                                        <div>
-                                                            <h4 className="mb-0 fw-bold">
-                                                                <i className="fas fa-thumbs-up text-primary "></i> New Like
-                                                            </h4>
-                                                            <p className="mt-3">
-                                                                Destiny Franks liked your post <b>How to become a better django and react.js developer</b>
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="mt-2">
-                                                        <p className="mt-1">
-                                                            <span className="me-2 fw-bold">
-                                                                Date: <span className="fw-light">30/11/24</span>
-                                                            </span>
-                                                        </p>
-                                                        <p>
-                                                            <button class="btn btn-outline-secondary" type="button">
-                                                                Mark as Seen <i className="fas fa-check"></i>
-                                                            </button>
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            <Footer />
-        </>
+  const fetchNoti = async () => {
+    const response = await apiInstance.get(
+      `author/dashboard/noti-list/${user_id}/`
     );
+    setNoti(response.data);
+  };
+
+  useEffect(() => {
+    fetchNoti();
+  }, []);
+
+  const handleMarkNotiAsSeen = async (notiId) => {
+    try {
+      const response = await apiInstance.post(
+        "author/dashboard/noti-mark-seen/",
+        { noti_id: notiId }
+      );
+      console.log(response.data);
+      Toast("success", "Notification Seen", "");
+      fetchNoti(); // Refetch notifications after marking it as seen
+    } catch (error) {
+      console.log("Error marking notification as seen: ", error);
+      Toast("error", "Error marking notification as seen", "");
+    }
+  };
+
+  return (
+    <>
+      <Header />
+      <section className="pt-5 pb-5">
+        <div className="container mx-auto px-4">
+          <div className="mt-0 md:mt-4">
+            <div className="w-full lg:w-8/12 mx-auto">
+              {/* Card */}
+              <div className="bg-white shadow-lg rounded-lg mb-4">
+                {/* Card header */}
+                <div className="flex items-center justify-between px-4 py-3">
+                  <div>
+                    <h3 className="text-xl font-semibold">Notifications</h3>
+                    <span className="text-sm text-gray-500">
+                      Manage all your notifications from here
+                    </span>
+                  </div>
+                </div>
+                {/* Card body */}
+                <div className="px-4 py-3">
+                  <ul className="space-y-4">
+                    {/* List group item */}
+                    {noti?.map((n) => (
+                      <li
+                        key={n?.id || n?.notification_id} // Ensure key is always unique
+                        className="bg-gray-50 p-4 shadow-md rounded-lg"
+                      >
+                        <div className="flex items-start">
+                          <div className="ml-4 mt-2 w-full">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h4 className="font-bold tracking-widest items-center gap-3">
+                                  {n?.type === "Like" && (
+                                    <>
+                                      <p className="flex text-blue-300 items-center gap-4">
+                                        <FaThumbsUp /> New Like
+                                      </p>
+                                      <p className="mt-3">
+                                        Someone just Liked your post{" "}
+                                        <b>{n?.post?.title || "Untitled"}</b>
+                                      </p>
+                                    </>
+                                  )}
+                                  {n?.type === "Comment" && (
+                                    <>
+                                      <p className="flex text-green-300 items-center gap-4">
+                                        <IoChatboxEllipses /> New Comment
+                                      </p>
+                                      <p className="mt-3">
+                                        Someone just commented on your post{" "}
+                                        <b>{n?.post?.title || "Untitled"}</b>
+                                      </p>
+                                    </>
+                                  )}
+                                  {n?.type === "Bookmark" && (
+                                    <>
+                                      <p className="flex text-red-300 items-center gap-4">
+                                        <FaBookmark /> New Bookmark
+                                      </p>
+                                      <p className="mt-3">
+                                        Someone just Bookmarked your post{" "}
+                                        <b>{n?.post?.title || "Untitled"}</b>
+                                      </p>
+                                    </>
+                                  )}
+                                </h4>
+                              </div>
+                            </div>
+                            <div className="mt-2">
+                              <p className="mt-1">
+                                <span className="font-semibold">
+                                  Date:{" "}
+                                  <span className="font-light">
+                                    {n?.date ? Moment(n.date) : "No date"}
+                                  </span>
+                                </span>
+                              </p>
+                              <p>
+                                <button
+                                  className="flex items-center gap-2 text-gray-600 border border-gray-300 rounded-md px-4 py-2"
+                                  onClick={() => handleMarkNotiAsSeen(n.id)} // Attach function to button
+                                >
+                                  Mark as Seen{" "}
+                                  <IoCheckmarkDoneOutline className="text-blue-700 font-bold text-xl" />
+                                </button>
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <Footer />
+    </>
+  );
 }
 
 export default Notifications;

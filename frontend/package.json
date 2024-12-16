@@ -16,6 +16,7 @@
     "axios": "^1.5.1",
     "chart.js": "^4.4.0",
     "dayjs": "^1.11.10",
+    "dompurify": "^3.2.3",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^3.1.2",
     "moment": "^2.29.4",

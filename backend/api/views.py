@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404
+from django.db.models import Sum
 from rest_framework import status, generics
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
@@ -188,9 +189,9 @@ class DashboardStats(generics.ListAPIView):
         user_id = self.kwargs['user_id']
         user = api_models.User.objects.get(id=user_id)
 
-        views = api_models.Post.objects.filter(user=user).aggregate(view=Sum("view"))['view']
+        likes = api_models.Post.objects.filter(user=user).aggregate(total_likes=Sum("likes")) ['total_likes'] or 0
+        views = api_models.Post.objects.filter(user=user).aggregate(view_sum=Sum("view")) ['view_sum'] or 0
         posts = api_models.Post.objects.filter(user=user).count()
-        likes = api_models.Post.objects.filter(user=user).aggregate(total_likes=Sum("likes"))['total_likes']
         bookmarks = api_models.Bookmark.objects.all().count()
 
         return [{
@@ -258,8 +259,10 @@ class DashboardMarkNotiSeenAPIView(APIView):
         return Response({"message": "Noti Marked As Seen"}, status=status.HTTP_200_OK)
     
 
-class DashboardReplayCommentAPIView(APIView):
 
+
+class DashboardReplayCommentAPIView(APIView):
+    
     @swagger_auto_schema(
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
@@ -270,17 +273,23 @@ class DashboardReplayCommentAPIView(APIView):
         ),
     )
     def post(self, request):
-        comment_id = request.data['comment_id']
-        reply = request.data['reply']
+        comment_id = request.data.get('comment_id')
+        reply = request.data.get('reply')
 
-        print("comment_id =======", comment_id)
-        print("reply ===========", reply)
+        if not comment_id or not reply:
+            return Response({"message": "Missing comment_id or reply"}, status=status.HTTP_400_BAD_REQUEST)
 
-        comment = api_models.Comment.objects.get(id=comment_id)
+        try:
+            comment = api_models.Comment.objects.get(id=comment_id)
+        except api_models.Comment.DoesNotExist:
+            return Response({"message": "Comment not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Update the reply
         comment.reply = reply
         comment.save()
 
-        return Response({"message": "Comment Response Sent"}, status=status.HTTP_201_CREATED)
+        return Response({"message": "Comment Response Sent"}, status=status.HTTP_200_OK)
+
     
 
 

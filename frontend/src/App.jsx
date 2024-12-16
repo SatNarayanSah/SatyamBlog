@@ -19,6 +19,7 @@ import MainWrapper from "./layouts/MainWrapper"
 import Detail from "./views/cors/Detail";
 import Category from "./views/cors/Category"
 import Search from "./views/cors/Search"
+import MainLayout from "./views/pages/MainLayout";
 
 function App() {
   return (
@@ -26,8 +27,9 @@ function App() {
       <BrowserRouter>
         <MainWrapper>
           <Routes>
+            {/* <Route path="/" element={<MainLayout/>}></Route> */}
             <Route path="/" element={<Index />} />
-            <Route path="/:slug/" element={<Detail />} />
+            <Route path="/details/:slug/" element={<Detail />} />
             <Route path="/category/" element={<Category />} />
             <Route path="/search/" element={<Search />} />
 

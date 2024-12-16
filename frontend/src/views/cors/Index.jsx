@@ -91,7 +91,7 @@ const index = () => {
                 <div className="p-4">
                   <h4 className="font-bold text-lg mb-2">
                     <Link
-                      to={post.slug}
+                      to={`/details/${post.slug}/`}
                       className="text-blue-400 capitalize hover:underline"
                     >
                       {post.title}
@@ -160,7 +160,7 @@ const index = () => {
                 disabled={currentPage === totalpages}
                 className="flex items-center gap-2 bg-gray-100 text-gray-700 py-2 px-4 rounded hover:text-blue-600 hover:shadow-xl hover:bg-gray-200"
               >
-                Previous
+                Next
                 <FaArrowRight />
               </button>
             </li>

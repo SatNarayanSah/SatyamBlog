@@ -4,6 +4,7 @@ import Footer from "../partials/Footer";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/Auth";
 import { register } from "../../utils/auth";
+import {  FaSpinner, FaUserPlus } from "react-icons/fa6";
 
 function Register() {
   const [biodata, setBioData] = useState({
@@ -12,7 +13,7 @@ function Register() {
     password: "",
     password2: "",
   });
-  const [isLoading, setIsLoading] = useState(flase);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const handleBioDataChange = (event) => {
     setBioData({
@@ -42,7 +43,10 @@ function Register() {
     );
     if (error) {
       alert(JSON.stringify(error));
+    } else {
+      navigate("/");
     }
+    setIsLoading(false);
   };
 
   return (
@@ -70,7 +74,11 @@ function Register() {
               </span>
             </div>
             {/* Form */}
-            <form className="space-y-4 z-100" noValidate>
+            <form
+              onSubmit={handleRegister}
+              className="space-y-4 z-100"
+              noValidate
+            >
               {/* Full Name */}
               <div>
                 <label
@@ -81,6 +89,8 @@ function Register() {
                 </label>
                 <input
                   type="text"
+                  onChange={handleBioDataChange}
+                  value={biodata.full_name}
                   id="full_name"
                   name="full_name"
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm outline-none p-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
@@ -97,6 +107,8 @@ function Register() {
                   Email Address
                 </label>
                 <input
+                  onChange={handleBioDataChange}
+                  value={biodata.email}
                   type="email"
                   id="email"
                   name="email"
@@ -114,6 +126,8 @@ function Register() {
                   Password
                 </label>
                 <input
+                  onChange={handleBioDataChange}
+                  value={biodata.password}
                   type="password"
                   id="password"
                   name="password"
@@ -131,20 +145,32 @@ function Register() {
                 </label>
                 <input
                   type="password"
+                  onChange={handleBioDataChange}
+                  value={biodata.password2}
                   id="confirm_password"
-                  name="confirm_password"
+                  name="password2"
                   className="mt-1 block w-full rounded-md border-gray-300 outline-none p-3 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   placeholder="**************"
                   required
                 />
               </div>
               <div>
-                <button
-                  type="submit"
-                  className="w-full py-2 px-4 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                >
-                  Sign Up <i className="fas fa-user-plus ml-2"></i>
-                </button>
+                {isLoading === true ? (
+                  <button
+                    type="submit"
+                    disabled
+                    className="w-full flex items-center gap-2 justify-center py-2 px-4 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    Processing <FaSpinner />
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    className="w-full flex items-center gap-2 justify-center py-2 px-4 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    Sign Up <FaUserPlus />
+                  </button>
+                )}
               </div>
             </form>
           </div>

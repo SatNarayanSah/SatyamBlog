@@ -1,83 +1,133 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../partials/Header";
 import Footer from "../partials/Footer";
-import { Link } from "react-router-dom";
+import apiInstance from "../../utils/axios";
+import Moment from "../../plugin/Moment";
+import Toast from "../../plugin/Toast";
+import useUserData from "../../plugin/useUserData";
 
 function Comments() {
+    const [comments, setComments] = useState([]);
+    const [reply, setReply] = useState("");
+    const [activeReplyId, setActiveReplyId] = useState(null); // State to track the active reply form
+    const user_id = useUserData()?.user_id;
+
+    const fetchComment = async () => {
+        const response = await apiInstance.get(`author/dashboard/comment-list/${user_id}`);
+        setComments(response.data);
+    };
+
+    useEffect(() => {
+        fetchComment();
+    }, []);
+
+    const handleSubmitReply = async (commentId) => {
+        try {
+            const response = await apiInstance.post(`author/dashboard/reply-comment/`, {
+                comment_id: commentId,
+                reply: reply,
+            });
+            console.log(response.data);
+            fetchComment();
+            Toast("success", "Reply Sent.", "");
+            setReply("");
+            setActiveReplyId(null); // Close the form after submitting
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const handleToggleReply = (commentId) => {
+        setActiveReplyId(activeReplyId === commentId ? null : commentId); // Toggle the active form
+    };
+
     return (
         <>
             <Header />
             <section className="pt-5 pb-5">
-                <div className="container">
-                    <div className="row mt-0 mt-md-4">
-                        <div className="col-lg-12 col-md-8 col-12">
+                <div className="container mx-auto px-4">
+                    <div className="flex flex-col mt-0 md:mt-4">
+                        <div className="w-full lg:w-10/12 mx-auto">
                             {/* Card */}
-                            <div className="card mb-4">
+                            <div className="bg-white shadow-md rounded-lg mb-4">
                                 {/* Card header */}
-                                <div className="card-header d-lg-flex align-items-center justify-content-between">
-                                    <div className="mb-3 mb-lg-0">
-                                        <h3 className="mb-0">Comments</h3>
-                                        <span>You have full control to manage your own comments.</span>
-                                    </div>
+                                <div className="p-4 border-b border-gray-200 flex flex-col lg:flex-row justify-between items-start lg:items-center">
+                                    <h3 className="text-xl font-semibold mb-2 lg:mb-0">Comments</h3>
+                                    <span className="text-sm text-gray-600">You have full control to manage your own comments.</span>
                                 </div>
                                 {/* Card body */}
-                                <div className="card-body">
+                                <div className="p-4">
                                     {/* List group */}
-                                    <ul className="list-group list-group-flush">
-                                        {/* List group item */}
-                                        <li className="list-group-item p-4 shadow rounded-3">
-                                            <div className="d-flex">
-                                                <img src="https://geeksui.codescandy.com/geeks/assets/images/avatar/avatar-1.jpg" alt="avatar" className="rounded-circle avatar-lg" style={{ width: "70px", height: "70px", borderRadius: "50%", objectFit: "cover" }} />
-                                                <div className="ms-3 mt-2">
-                                                    <div className="d-flex align-items-center justify-content-between">
-                                                        <div>
-                                                            <h4 className="mb-0">Eleanor Pena</h4>
-                                                            <span>2 hour ago</span>
+                                    <ul className="space-y-4">
+                                        {comments?.map((c, index) => (
+                                            <li key={index} className="p-4 shadow rounded-lg bg-gray-50">
+                                                <div className="flex flex-col md:flex-row">
+                                                    <img
+                                                        src="https://as1.ftcdn.net/v2/jpg/03/53/11/00/1000_F_353110097_nbpmfn9iHlxef4EDIhXB1tdTD0lcWhG9.jpg"
+                                                        alt="avatar"
+                                                        className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover"
+                                                    />
+                                                    <div className="md:ml-4 mt-3 md:mt-0 flex-1">
+                                                        <div className="flex flex-col sm:flex-row justify-between">
+                                                            <div>
+                                                                <h4 className="font-semibold text-lg">{c.name}</h4>
+                                                                <span className="text-sm text-gray-500">{Moment(c.date)}</span>
+                                                            </div>
                                                         </div>
-                                                        <div>
-                                                            <a href="#" data-bs-toggle="tooltip" data-placement="top" title="Report Abuse">
-                                                                <i className="fe fe-flag" />
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div className="mt-2">
-                                                        <p className="mt-2">
-                                                            <span className="fw-bold me-2">
-                                                                Comment <i className="fas fa-arrow-right"></i>
-                                                            </span>
-                                                            This post was really amazing, do you recommend that beginners learn React.js and Django?
-                                                        </p>
-                                                        <p className="mt-2">
-                                                            <span className="fw-bold me-2">
-                                                                Response <i className="fas fa-arrow-right"></i>
-                                                            </span>
-                                                            Thanks for the commment. Yes, it's an ideal stack for proficient development.
-                                                        </p>
-                                                        <p>
-                                                            <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                                                        <div className="mt-2">
+                                                            <p className="flex items-center gap-2 text-gray-700">
+                                                                <span className="font-semibold">Comment:</span>
+                                                                {c.comment}
+                                                            </p>
+                                                            <p className="flex items-center gap-2 mt-2 text-gray-700">
+                                                                <span className="font-semibold">Response:</span>
+                                                                {c.reply ? (
+                                                                    c.reply
+                                                                ) : (
+                                                                    <span className="text-red-600">No Reply</span>
+                                                                )}
+                                                            </p>
+                                                            <button
+                                                                className="mt-3 inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                                                                type="button"
+                                                                onClick={() => handleToggleReply(c.id)} // Toggle reply form visibility
+                                                            >
                                                                 Send Response
                                                             </button>
-                                                        </p>
-                                                        <div class="collapse" id="collapseExample">
-                                                            <div class="card card-body">
-                                                                <form>
-                                                                    <div class="mb-3">
-                                                                        <label for="exampleInputEmail1" class="form-label">
-                                                                            Write Response
-                                                                        </label>
-                                                                        <textarea name="" id="" cols="30" className="form-control" rows="4"></textarea>
+                                                            {activeReplyId === c.id && ( // Show form only if it's the active one
+                                                                <div className="mt-4">
+                                                                    <div className="bg-white p-4 rounded-md shadow-md">
+                                                                        <div className="mb-3">
+                                                                            <label
+                                                                                htmlFor={`replyInput${c.id}`}
+                                                                                className="block text-sm font-medium text-gray-700"
+                                                                            >
+                                                                                Write Response
+                                                                            </label>
+                                                                            <textarea
+                                                                                id=""
+                                                                                 onChange={(e) => setReply(e.target.value)}
+                                                                                value={reply}
+                                                                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                                                                rows="4"
+                                                                                placeholder="Type your reply here"
+                                                                            ></textarea>
+                                                                        </div>
+                                                                        <button
+                                                                            onClick={() => handleSubmitReply(c?.id)}
+                                                                            type="button"
+                                                                            className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                                                        >
+                                                                            Send Response
+                                                                        </button>
                                                                     </div>
-
-                                                                    <button type="submit" class="btn btn-primary">
-                                                                        Send Response <i className="fas fa-paper-plane"> </i>
-                                                                    </button>
-                                                                </form>
-                                                            </div>
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </li>
+                                            </li>
+                                        ))}
                                     </ul>
                                 </div>
                             </div>
