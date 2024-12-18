@@ -30,7 +30,7 @@ function App() {
             {/* <Route path="/" element={<MainLayout/>}></Route> */}
             <Route path="/" element={<Index />} />
             <Route path="/details/:slug/" element={<Detail />} />
-            <Route path="/category/" element={<Category />} />
+            <Route path="/categories/" element={<Category />} />
             <Route path="/search/" element={<Search />} />
 
             {/* Authentication */}

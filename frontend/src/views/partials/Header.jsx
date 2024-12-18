@@ -90,7 +90,7 @@ function Header() {
               </Link>
             </li>
             <li>
-              <Link to="/category" className="hover:text-blue-400">
+              <Link to="/categories" className="hover:text-blue-400">
                 Category
               </Link>
             </li>
@@ -200,7 +200,7 @@ function Header() {
                 <>
                   <Link
                     to="/register"
-                    className="bg-green-900 tracking-widest flex items-center gap-3 text-white px-4 py-2 rounded hover:bg-green-600"
+                    className="bg-green-500 tracking-widest flex items-center gap-3 text-white px-4 py-2 rounded hover:bg-green-600"
                   >
                     <FaUserPlus />
                     Register

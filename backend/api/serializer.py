@@ -65,6 +65,7 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ["id", "title", "image", "slug", "post_count"]
 
 
+
 class CommentSerializer(serializers.ModelSerializer):
     
     class Meta:
@@ -103,3 +104,11 @@ class AuthorSerializer(serializers.Serializer):
     posts = serializers.IntegerField(default=0)
     likes = serializers.IntegerField(default=0)
     bookmark = serializers.IntegerField(default=0)
+
+
+class CategoryDetailSerializer(serializers.ModelSerializer):
+    posts = PostSerializer(source="posts.all", many=True, read_only=True)
+
+    class Meta:
+        model = api_models.Category
+        fields = ["id", "name", "description", "posts"]

@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.db.models import Sum
 from rest_framework import status, generics
 from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from drf_yasg.utils import swagger_auto_schema
@@ -379,3 +379,16 @@ class DashboardPostEditAPIView(generics.RetrieveUpdateDestroyAPIView):
     "category_id": 1,
     "post_status": "Active"
 }
+
+
+# Category Detail, Update, and Delete View
+class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = api_models.Category.objects.all()
+    serializer_class = api_serializer.CategoryDetailSerializer
+    lookup_field = "name"
+
+    def get_permissions(self):
+        if self.request.method == "GET":  # Allow unauthenticated GET requests
+            return [AllowAny()]
+        return [IsAuthenticated()]  # Require authentication for PUT, PATCH, DELETE
+

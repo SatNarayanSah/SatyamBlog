@@ -78,26 +78,28 @@ const index = () => {
                   <div className="mb-4">
                     {/* <h2 className="text-xl font-bold">Categories</h2> */}
                   </div>
-                  <div className="flex flex-wrap -mx-2">
+                  <div className="flex flex-wrap items-center justify-center -mx-2">
                     {/* Card */}
                     {category.map((cat) => (
                       <div
                         key={cat?.id}
-                        className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 px-2 mb-4"
+                        className="w-full sm:w-1/2 md:w-1/3 lg:w-1/6 px-2 mb-4"
                       >
-                        <div className="bg-white w-full rounded-lg flex shadow-lg p-3 gap-3  overflow-hidden text-center">
+                        <Link to={`/categories/`} >
+                        <div className="bg-white w-full rounded-lg flex shadow-lg p-3 gap-3  overflow-hidden justify-center text-center">
                           <img
                             src={cat.image}
-                            alt=""
+                            alt={cat.slug}
                             className="w-16 h-16 object-fit"
                           />
-                          <div className="  items-center justify-between ">
+                          <div className="  items-center  ">
                             <h5 className="text-lg font-medium">{cat.title}</h5>
                             <small className="text-blue-500 text-lg">
                               {cat.post_count || "0"}
                             </small>
                           </div>
                         </div>
+                        </Link>
                       </div>
                     ))}
                   </div>
@@ -115,7 +117,7 @@ const index = () => {
                 /> */}
               </Link>
               <h2 className="text-start block mt-4 text-2xl font-bold">
-                Trending Articles 🔥
+                Latest Blogs 📟
               </h2>
             </div>
           </div>
@@ -123,12 +125,15 @@ const index = () => {
       </section>
 
       <section className="pt-4 pb-0">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="container mx-auto  ">
+          <div className="flex flex-wrap items-center justify-center gap-4
+          ">
+
+          <div className="grid grid-cols-1 w-4/5 sm:grid-cols-2 lg:border-r-4 px-5 lg:grid-cols-3 gap-6">
             {postItems?.map((post, index) => (
               <div
                 className="bg-white rounded-lg shadow-md overflow-hidden"
-                key={post?.id || index}
+                key={post?.id || index} 
               >
                 <div className="relative  overflow-hidden">
                   <img
@@ -174,6 +179,11 @@ const index = () => {
                 </div>
               </div>
             ))}
+          </div>
+         
+          <div>
+            this is the search bar sections
+          </div>
           </div>
           <nav className="flex justify-between items-center mt-6">
             <li
