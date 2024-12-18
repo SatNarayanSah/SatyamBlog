@@ -40,7 +40,8 @@ const index = () => {
     fetchPosts();
   }, []);
 
-  const itemsPerPage = 1;
+  
+  const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -48,7 +49,7 @@ const index = () => {
   const totalpages = Math.ceil(posts?.length / itemsPerPage);
   const pageNumber = Array.from(
     { length: totalpages },
-    (_, index) => (index + 1)
+    (_, index) => index + 1
   );
 
   return (
@@ -108,7 +109,7 @@ const index = () => {
                   <ul className="mt-3 space-y-2 text-gray-600">
                     <li className="flex font-bold tracking-widest items-center gap-2">
                       <FaUserAlt />
-                      {post?.profile?.full_name || "Author"}
+                      {post?.user?.full_name || "Author"}
                     </li>
                     <li className="flex  items-center gap-2">
                       <BsCalendar />
@@ -176,7 +177,10 @@ const index = () => {
           <div className="flex flex-wrap -mx-2">
             {/* Card */}
             {category.map((cat) => (
-              <div key={cat?.id} className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 px-2 mb-4">
+              <div
+                key={cat?.id}
+                className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 px-2 mb-4"
+              >
                 <div className="bg-white rounded-lg shadow-sm overflow-hidden text-center">
                   <img
                     src={cat.image}

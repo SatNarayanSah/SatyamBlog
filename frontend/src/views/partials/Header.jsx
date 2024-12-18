@@ -5,6 +5,7 @@ import { TbLogout2 } from "react-icons/tb";
 import { MdDashboard, MdLogin } from "react-icons/md";
 import { CiSearch } from "react-icons/ci";
 import { TiArrowSortedDown } from "react-icons/ti";
+// import {fetchPosts, setPosts , posts} from "../cors/Index" 
 
 import { useAuthStore } from "../../store/Auth";
 
@@ -20,6 +21,19 @@ function Header() {
   const toggleDropdown = (dropdown) => {
     setIsOpen(isOpen === dropdown ? null : dropdown);
   };
+
+  // const handleSearch = (e) => {
+  //   const query = e.target.value.toLowerCase();
+  //   if (query === "") {
+  //     fetchPosts();
+  //   } else {
+  //     const filtered = posts.filter((p) => {
+  //       return p.title.toLowerCase().includes(query);
+  //     });
+  //     setPosts(filtered);
+  //   }
+  // };
+
   return (
     <header className="bg-[#35478a] z-100 flex flex-col shadow-xl text-white sticky top-0 z-50">
       <nav className="container mx-auto flex items-center justify-between py-4">
@@ -56,6 +70,7 @@ function Header() {
             <form>
               <input
                 type="text"
+                onChange={(e) => handleSearch(e)}
                 placeholder="Search Articles"
                 className="bg-white text-black py-2 px-4 rounded-full w-64 focus:outline-none focus:ring-1 focus:ring-green-900"
               />
