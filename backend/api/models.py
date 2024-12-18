@@ -115,7 +115,7 @@ class Comment(models.Model):
     name = models.CharField(max_length=100)
     email = models.CharField(max_length=100)
     comment = models.TextField(null=True, blank=True)
-    replay = models.TextField(null=True, blank=True)
+    reply = models.TextField(null=True, blank=True)
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
