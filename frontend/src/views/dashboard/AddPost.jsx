@@ -120,7 +120,7 @@ function AddPost() {
                       </div>
                       <div className="flex space-x-2">
                         <Link
-                          to=""
+                          to="/posts/"
                           className="border text-back flex items-center gap-1 px-4 py-2 rounded-md"
                         >
                           <FaArrowLeft /> Back to Posts

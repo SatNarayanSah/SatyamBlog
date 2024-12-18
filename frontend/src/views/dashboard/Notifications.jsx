@@ -7,21 +7,23 @@ import useUserData from "../../plugin/useUserData";
 import Toast from "../../plugin/Toast";
 import Moment from "../../plugin/Moment";
 import { FaBookmark, FaThumbsUp } from "react-icons/fa6";
+import { Link } from "react-router-dom";
 
 function Notifications() {
   const [noti, setNoti] = useState([]);
+  const [comment, setComments] = useState([]);
   const user_id = useUserData()?.user_id;
 
   const fetchNoti = async () => {
-    const response = await apiInstance.get(
-      `author/dashboard/noti-list/${user_id}/`
-    );
-    setNoti(response.data);
+    try {
+      const response = await apiInstance.get(
+        `author/dashboard/noti-list/${user_id}/`
+      );
+      setNoti(response.data);
+    } catch (error) {
+      console.log(error);
+    }
   };
-
-  useEffect(() => {
-    fetchNoti();
-  }, []);
 
   const handleMarkNotiAsSeen = async (notiId) => {
     try {
@@ -38,6 +40,9 @@ function Notifications() {
     }
   };
 
+  useEffect(() => {
+    fetchNoti();
+  }, []);
   return (
     <>
       <Header />
@@ -62,7 +67,7 @@ function Notifications() {
                     {/* List group item */}
                     {noti?.map((n) => (
                       <li
-                        key={n?.id || n?.notification_id} // Ensure key is always unique
+                        key={n?.id || n?.notification_id}
                         className="bg-gray-50 p-4 shadow-md rounded-lg"
                       >
                         <div className="flex items-start">
@@ -88,7 +93,11 @@ function Notifications() {
                                       </p>
                                       <p className="mt-3">
                                         Someone just commented on your post{" "}
-                                        <b>{n?.post?.title || "Untitled"}</b>
+                                        <Link to={`/details${n?.post?.slug}`}>
+                                        <b>
+                                          {n?.post?.title || "Untitled post"}
+                                        </b>
+                                        </Link>
                                       </p>
                                     </>
                                   )}

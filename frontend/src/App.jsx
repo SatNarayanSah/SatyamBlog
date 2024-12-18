@@ -44,7 +44,7 @@ function App() {
             <Route path="/dashboard/" element={<Dashboard />} />
             <Route path="/posts/" element={<Posts />} />
             <Route path="/add-post/" element={<AddPost />} />
-            <Route path="/edit-post/" element={<EditPost />} />
+            <Route path="/edit-post/:slug" element={<EditPost />} />
             <Route path="/comments/" element={<Comments />} />
             <Route path="/notifications/" element={<Notifications />} />
             <Route path="/profile/" element={<Profile />} />

@@ -1,137 +1,289 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { FaArrowLeft, FaCircleCheck } from "react-icons/fa6";
 import Header from "../partials/Header";
 import Footer from "../partials/Footer";
-import { Link } from "react-router-dom";
-import { FaArrowLeft, FaCircleCheck } from "react-icons/fa6";
+import apiInstance from "../../utils/axios";
+import useUserData from "../../plugin/useUserData";
+import Toast from "../../plugin/Toast";
+import Swal from "sweetalert2";
+import { use } from "react";
 import { FaCheckCircle } from "react-icons/fa";
 
-function AddPost() {
-    return (
-        <>
-            <Header />
-            <section className="pt-5 pb-5">
-                <div className="container mx-auto px-4">
-                    <div className="row  mt-4">
-                        <div className="col-12">
-                            <>
-                                {/* Header Section */}
-                                <section className="p-8 bg-blue-300 rounded-lg">
-                                    <div className="container mx-auto">
-                                        <div className="flex flex-wrap justify-between items-center">
-                                            <div className="mb-4">
-                                                <h1 className="text-white text-2xl font-bold">Edit Blog Post</h1>
-                                                <p className="text-white text-lg">Use the article builder below to edit your article.</p>
-                                            </div>
-                                            <div className="flex space-x-2">
-                                                <Link
-                                                    to="/instructor/posts/"
-                                                    className="flex items-center gap-3 bg-white text-blue-600 px-4 py-2 rounded-md hover:bg-gray-200 transition"
-                                                >
-                                                    <FaArrowLeft/> Back to Posts
-                                                </Link>
-                                                <button
-                                                    className="bg-gray-800 flex items-center gap-3 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition"
-                                                >
-                                                    Save Changes <FaCircleCheck className="text-green-500"/>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </section>
+function EditPost() {
+   // Extract the post slug from the URL
+  //   const [post, setPost] = useState(null);
+  const [post, setCreatePost] = useState({
+    image: "",
+    title: "",
+    description: "",
+    category: "",
+    tags: "",
+    status: "Active",
+  });
+  const [imagePreview, setImagePreview] = useState("");
+  const [categoryList, setCategoryList] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [editPost, setEditPost] = useState([]);
+  const param = useParams();
 
-                                {/* Form Section */}
-                                <section className="mt-8">
-                                    <div className="bg-white shadow-md rounded-lg">
-                                        <div className="border-b px-6 py-4">
-                                            <h4 className="text-lg font-semibold">Basic Information</h4>
-                                        </div>
-                                        <div className="p-6">
-                                            {/* Preview Image */}
-                                            <label htmlFor="postThumbnail" className="block font-medium mb-2">
-                                                Preview
-                                            </label>
-                                            <img
-                                                className="w-full h-80 object-cover rounded-lg mb-4"
-                                                src="https://www.eclosio.ong/wp-content/uploads/2018/08/default.png"
-                                                alt="Preview"
-                                            />
-                                            {/* Thumbnail Upload */}
-                                            <div className="mb-4">
-                                                <label htmlFor="postThumbnail" className="block font-medium mb-2">
-                                                    Thumbnail
-                                                </label>
-                                                <input
-                                                    id="postThumbnail"
-                                                    className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                                                    type="file"
-                                                />
-                                            </div>
+  const userId = useUserData()?.user_id;
+  const navigate = useNavigate();
 
-                                            {/* Title Input */}
-                                            <div className="mb-4">
-                                                <label className="block font-medium mb-2">Title</label>
-                                                <input
-                                                    className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                                                    type="text"
-                                                    placeholder=""
-                                                />
-                                                <small className="text-gray-500">Write a 60 character post title.</small>
-                                            </div>
+  const fetchPost = async () => {
+    try {
+      const response = await apiInstance.get(
+        `author/dashboard/post-detail/${userId}/${param?.id}`
+      );
+  
+      setCreatePost({
+        ...response.data,
+        image: response.data.image || "", // Set existing image URL
+      });
+      setImagePreview(response.data.image || ""); // Set preview for existing image
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-                                            {/* Category Select */}
-                                            <div className="mb-4">
-                                                <label className="block font-medium mb-2">Post Category</label>
-                                                <select
-                                                    className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                                                >
-                                                    <option value="">-------------</option>
-                                                    <option value="Lifestyle">Lifestyle</option>
-                                                    <option value="Fashion">Fashion</option>
-                                                    <option value="Tech">Tech</option>
-                                                    <option value="Health">Health</option>
-                                                    <option value="Entertainment">Entertainment</option>
-                                                </select>
-                                                <small className="text-gray-500">Help people find your posts by choosing categories that represent your post.</small>
-                                            </div>
+  const fetchCategory = async () => {
+    try {
+      const response = await apiInstance.get(`/post/category/list/`);
+      setCategoryList(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-                                            {/* Post Description */}
-                                            <div className="mb-4">
-                                                <label className="block font-medium mb-2">Post Description</label>
-                                                <textarea
-                                                    className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                                                    rows="5"
-                                                ></textarea>
-                                                <small className="text-gray-500">A brief summary of your post.</small>
-                                            </div>
+  useEffect(() => {
+    fetchCategory();
+    fetchPost();
+  }, []);
 
-                                            {/* Tag Input */}
-                                            <div className="mb-4">
-                                                <label className="block font-medium mb-2">Tag</label>
-                                                <input
-                                                    className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                                                    type="text"
-                                                    placeholder="health, medicine, fitness"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
+  // Handle input changes
+  const handleCreatePostChange = (event) => {
+    setCreatePost({
+      ...post,
+      [event.target.name]: event.target.value,
+    });
+  };
 
-                                    {/* Update Button */}
-                                    <button
-                                        className="flex items-center justify-center gap-3 w-full bg-green-600 text-white py-3 mt-4 rounded-lg hover:bg-green-700 transition"
-                                        type="button"
-                                    >
-                                        Update Post <FaCheckCircle/>
-                                    </button>
-                                </section>
-                            </>
-                        </div>
+  // Handle file input and preview
+  const handleFileChange = (event) => {
+    const selectedFile = event.target.files[0];
+    if (selectedFile) {
+      const reader = new FileReader();
+      reader.onload = () => setImagePreview(reader.result);
+      reader.readAsDataURL(selectedFile);
+
+      setCreatePost((prev) => ({
+        ...prev,
+        image: { file: selectedFile, preview: reader.result },
+      }));
+    }
+  };
+
+  // Handle form submission
+  const handleCreatePost = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    // Validation
+    if (!post.title || !post.description || !post.image.file) {
+      Toast("error", "All fields are required");
+      setIsLoading(false);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("user_id", userId);
+    formData.append("title", post.title);
+    formData.append("image", post.image.file);
+    formData.append("description", post.description);
+    formData.append("tags", post.tags);
+    formData.append("category", post.category);
+    formData.append("post_status", post.status);
+
+    try {
+      const response = await apiInstance.patch(
+        `author/dashboard/post-detail/${userId}/${param?.id}`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+      setIsLoading(false);
+      Swal.fire({ icon: "success", title: "Post Edited successfully" });
+      navigate("/posts/");
+    } catch (error) {
+      console.error(error);
+      setIsLoading(false);
+    }
+  };
+
+  if (!post) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <>
+      <Header />
+      <section className="pt-5 pb-5">
+        <div className="container mx-auto px-4">
+          <div className="row mt-4">
+            <div className="col-12">
+              {/* Header Section */}
+              <section className="p-8 bg-blue-300 rounded-lg">
+                <div className="container mx-auto">
+                  <div className="flex flex-wrap justify-between items-center">
+                    <div className="mb-4">
+                      <h1 className="text-white text-2xl font-bold">
+                        Edit Blog Post
+                      </h1>
+                      <p className="text-white text-lg">Edit the post below.</p>
                     </div>
+                    <div className="flex space-x-2">
+                      <Link
+                        to="/posts/"
+                        className="flex items-center gap-3 bg-white text-blue-600 px-4 py-2 rounded-md hover:bg-gray-200 transition"
+                      >
+                        <FaArrowLeft /> Back to Posts
+                      </Link>
+                      <button
+                        // onClick={handleUpdate}
+                        className="bg-gray-800 flex items-center gap-3 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition"
+                      >
+                        Save Changes{" "}
+                        <FaCircleCheck className="text-green-500" />
+                      </button>
+                    </div>
+                  </div>
                 </div>
-            </section>
-            <Footer />
-        </>
-    );
+              </section>
+
+              {/* Form Section */}
+              <form onSubmit={handleCreatePost} className="pb-8 mt-5">
+                <div className="card mb-3">
+                  {/* Basic Info Section */}
+                  <div className="card-header border-b px-4 py-3">
+                    <h4 className="text-xl font-semibold">Basic Information</h4>
+                  </div>
+                  <div className="card-body">
+                    <label htmlFor="postThumbnail" className="form-label">
+                      Preview
+                    </label>
+                    <img
+                      className="w-full h-80 object-cover rounded-lg mb-4"
+                      src={
+                        imagePreview ||
+                       post.image
+                      }
+                      alt="Preview"
+                    />
+
+                    <div className="mb-3">
+                      <label htmlFor="postThumbnail" className="form-label">
+                        Thumbnail
+                      </label>
+                      <input
+                        id="postThumbnail"
+                        name="file"
+                        onChange={handleFileChange}
+                        className="form-control w-full py-2 px-4 border border-gray-300 rounded-md"
+                        type="file"
+                      />
+                    </div>
+
+                    <div className="mb-3">
+                      <label className="form-label">Title</label>
+                      <input
+                        className="form-control w-full py-2 px-4 border border-gray-300 rounded-md"
+                        type="text"
+                        name="title"
+                        value={post.title}
+                        onChange={handleCreatePostChange}
+                        placeholder="Write a 60-character post title."
+                      />
+                      <small>Write a 60-character post title.</small>
+                    </div>
+
+                    <div className="mb-3">
+                      <label className="form-label">Post Category</label>
+                      <select
+                        className="form-select w-full py-2 px-4 border border-gray-300 rounded-md"
+                        name="category"
+                        value={post.category.id}
+                        onChange={handleCreatePostChange}
+                      >
+                        <option value="">Select a category</option>
+                        {categoryList.map((c) => (
+                          <option key={c.id} value={c.id}>
+                            {c.title || post.category}
+                          </option>
+                        ))}
+                      </select>
+                      <small>
+                        Help people find your posts by choosing categories that
+                        represent your post.
+                      </small>
+                    </div>
+
+                    <div className="mb-3">
+                      <label className="form-label">Post Description</label>
+                      <textarea
+                        name="description"
+                        onChange={handleCreatePostChange}
+                        value={post.description}
+                        className="form-control w-full py-2 px-4 border border-gray-300 rounded-md"
+                        rows="10"
+                      ></textarea>
+                      <small>A brief summary of your posts.</small>
+                    </div>
+
+                    <div>
+                      <label htmlFor="" className="">
+                        Status
+                      </label>
+                      <select
+                        name="status"
+                        value={post.status}
+                        onChange={handleCreatePostChange}
+                        className="w-full py-2 px-4 border outline-none border-gray-300 rounded-md"
+                      >
+                        <option value="Active">Active</option>
+                        <option value="Draft">Draft</option>
+                        <option value="Disabled">Disabled</option>
+                      </select>
+                    </div>
+
+                    <label className="mt-4">Tags</label>
+                    <input
+                      className="form-control w-full py-2 px-4 border border-gray-300 rounded-md"
+                      type="text"
+                      value={post.tags}
+                      onChange={handleCreatePostChange}
+                      name="tags"
+                      placeholder="health, medicine, fitness"
+                    />
+                  </div>
+                </div>
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  
+                  className="bg-blue-500 text-white flex items-center justify-center gap-2 w-full py-3 mt-2 rounded-md"
+                >
+                  {isLoading ? "Creating..." : "Create Post"}{" "}
+                  <FaCheckCircle className="text-green-500" />
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+      <Footer />
+    </>
+  );
 }
 
-export default AddPost;
+export default EditPost;

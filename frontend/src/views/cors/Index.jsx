@@ -19,8 +19,9 @@ import {
 import Toast from "../../plugin/Toast";
 import Moment from "../../plugin/Moment";
 import apiInstance from "../../utils/Axios";
-import { FaUserAlt } from "react-icons/fa";
+import { FaSearch, FaUserAlt } from "react-icons/fa";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa6";
+import { CiSearch } from "react-icons/ci";
 const index = () => {
   const [posts, setPosts] = useState([]);
   const [category, setCategory] = useState([]);
@@ -50,7 +51,17 @@ const index = () => {
     { length: totalpages },
     (_, index) => index + 1
   );
-
+  const handleSearch = (e) => {
+    const query = e.target.value.toLowerCase();
+    if (query === "") {
+      fetchPosts();
+    } else {
+      const filtered = posts.filter((p) => {
+        return p.title.toLowerCase().includes(query);
+      });
+      setPosts(filtered);
+    }
+  };
   return (
     <>
       <Header />
@@ -85,20 +96,22 @@ const index = () => {
                         key={cat?.id}
                         className="w-full sm:w-1/2 md:w-1/3 lg:w-1/6 px-2 mb-4"
                       >
-                        <Link to={`/categories/`} >
-                        <div className="bg-white w-full rounded-lg flex shadow-lg p-3 gap-3  overflow-hidden justify-center text-center">
-                          <img
-                            src={cat.image}
-                            alt={cat.slug}
-                            className="w-16 h-16 object-fit"
-                          />
-                          <div className="  items-center  ">
-                            <h5 className="text-lg font-medium">{cat.title}</h5>
-                            <small className="text-blue-500 text-lg">
-                              {cat.post_count || "0"}
-                            </small>
+                        <Link to={`/categories/`}>
+                          <div className="bg-white w-full rounded-lg flex shadow-lg p-3 gap-3  overflow-hidden justify-center text-center">
+                            <img
+                              src={cat.image}
+                              alt={cat.slug}
+                              className="w-16 h-16 object-fit"
+                            />
+                            <div className="  items-center  ">
+                              <h5 className="text-lg font-medium">
+                                {cat.title}
+                              </h5>
+                              <small className="text-blue-500 text-lg">
+                                {cat.post_count || "0"}
+                              </small>
+                            </div>
                           </div>
-                        </div>
                         </Link>
                       </div>
                     ))}
@@ -126,64 +139,83 @@ const index = () => {
 
       <section className="pt-4 pb-0">
         <div className="container mx-auto  ">
-          <div className="flex flex-wrap items-center justify-center gap-4
-          ">
+          <div
+            className="flex   justify-center gap-4
+          "
+          >
+            <div className="grid grid-cols-1 w-4/5 sm:grid-cols-2 lg:border-r-4 px-5 lg:grid-cols-3 gap-6">
+              {postItems?.map((post, index) => (
+                <div
+                  className="bg-white rounded-lg shadow-md overflow-hidden"
+                  key={post?.id || index}
+                >
+                  <div className="relative  overflow-hidden">
+                    <img
+                      src={post.image}
+                      alt="Card"
+                      className="w-full h-40 object-fit"
+                    />
+                    <div className="absolute bg-white top-3 right-3 p-2 rounded-md text-lg font-bold text-blue-500">
+                      {post?.category?.title}
+                    </div>
+                  </div>
+                  <div className="p-4">
+                    <h4 className="font-bold text-lg mb-2">
+                      <Link
+                        to={`/details/${post.slug}/`}
+                        className="text-blue-400 capitalize hover:underline"
+                      >
+                        {post.title}
+                      </Link>
+                    </h4>
+                    <div className="flex items-center space-x-2">
+                      <button className="text-red-500 hover:text-red-700">
+                        <BsBookmarkFill />
+                      </button>
+                      <button className="text-blue-500 hover:text-blue-700">
+                        <BsHeart />
+                      </button>
+                    </div>
+                    <ul className="mt-3 space-y-2 text-gray-600">
+                      <li className="flex font-bold tracking-widest items-center gap-2">
+                        <FaUserAlt />
+                        {post?.user?.full_name || "Author"}
+                      </li>
+                      <li className="flex  items-center gap-2">
+                        <BsCalendar />
+                        {Moment(post.data)}
+                      </li>
+                      <li className="flex  items-center gap-2">
+                        <BsEye />
+                        {post?.view} views
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              ))}
+            </div>
 
-          <div className="grid grid-cols-1 w-4/5 sm:grid-cols-2 lg:border-r-4 px-5 lg:grid-cols-3 gap-6">
-            {postItems?.map((post, index) => (
-              <div
-                className="bg-white rounded-lg shadow-md overflow-hidden"
-                key={post?.id || index} 
-              >
-                <div className="relative  overflow-hidden">
-                  <img
-                    src={post.image}
-                    alt="Card"
-                    className="w-full h-40 object-fit"
+            <div className=" p-5 h-fit shadow-xl rounded-lg overflow-hidden w-1/5">
+              <form className="w-full max-w-sm">
+                  {/* <label htmlFor="search">Search Posts</label> */}
+                <div className="flex flex-wrap justify-center items-center border-b border-teal-500 py-2">
+                  <input
+                    className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-blue-500"
+                    type="text"
+                    onChange={(e) => handleSearch(e)}
+                    placeholder="Search Posts"
+                    aria-label="Full name"
                   />
-                  <div className="absolute bg-white top-3 right-3 p-2 rounded-md text-lg font-bold text-blue-500">
-                    {post?.category?.title}
-                  </div>
+                  <button
+                    className="flex items-center gap-3 mt-5 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-white py-1 px-2 rounded"
+                    type="button"
+                  >
+                    Search <FaSearch />
+                  </button>
+                 
                 </div>
-                <div className="p-4">
-                  <h4 className="font-bold text-lg mb-2">
-                    <Link
-                      to={`/details/${post.slug}/`}
-                      className="text-blue-400 capitalize hover:underline"
-                    >
-                      {post.title}
-                    </Link>
-                  </h4>
-                  <div className="flex items-center space-x-2">
-                    <button className="text-red-500 hover:text-red-700">
-                      <BsBookmarkFill />
-                    </button>
-                    <button className="text-blue-500 hover:text-blue-700">
-                      <BsHeart />
-                    </button>
-                  </div>
-                  <ul className="mt-3 space-y-2 text-gray-600">
-                    <li className="flex font-bold tracking-widest items-center gap-2">
-                      <FaUserAlt />
-                      {post?.user?.full_name || "Author"}
-                    </li>
-                    <li className="flex  items-center gap-2">
-                      <BsCalendar />
-                      {Moment(post.data)}
-                    </li>
-                    <li className="flex  items-center gap-2">
-                      <BsEye />
-                      {post?.view} views
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            ))}
-          </div>
-         
-          <div>
-            this is the search bar sections
-          </div>
+              </form>
+            </div>
           </div>
           <nav className="flex justify-between items-center mt-6">
             <li
@@ -229,10 +261,6 @@ const index = () => {
           </nav>
         </div>
       </section>
-
-     
-
-     
 
       <Footer />
     </>

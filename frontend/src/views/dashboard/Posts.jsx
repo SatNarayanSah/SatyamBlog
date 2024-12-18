@@ -63,9 +63,11 @@ function Posts() {
                       {posts?.length}
                     </span>
                   </h5>
+                  <Link to='/add-post/'>
                   <button className="bg-blue-500 text-white text-sm py-2 px-4 rounded flex items-center gap-2">
                     Add New <FaPlus />
                   </button>
+                  </Link>
                 </div>
                 <div className="p-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">

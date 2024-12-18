@@ -189,6 +189,11 @@ function Detail() {
 
             {/* Main Content START */}
             <div className="lg:w-10/12 mb-5 text-justify">
+            <div>
+              <img 
+              className="flex items-center justify-center w-full rounded-lg"
+              src={post.image} alt="" />
+            </div>
               {post.description}
 
               <div className="mt-5">

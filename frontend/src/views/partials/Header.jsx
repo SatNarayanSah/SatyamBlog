@@ -67,20 +67,7 @@ function Header() {
         {/* Navigation */}
         <div className="hidden lg:flex items-center space-x-6">
           <div className="relative">
-            <form>
-              <input
-                type="text"
-                onChange={(e) => handleSearch(e)}
-                placeholder="Search Articles"
-                className="bg-white text-black py-2 px-4 rounded-full w-64 focus:outline-none focus:ring-1 focus:ring-green-900"
-              />
-              <button
-                type="submit"
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-white"
-              >
-                <CiSearch className="text-blue-700 text-2xl " />
-              </button>
-            </form>
+           
           </div>
 
           <ul className="flex items-center space-x-6">
