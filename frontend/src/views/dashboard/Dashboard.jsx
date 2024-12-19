@@ -161,281 +161,227 @@ function Dashboard() {
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-6 justify-center ">
+            {/* Main Content Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Latest Posts Section */}
-              <div className="md:w-1/2 2xl:w-1/4 bg-white border rounded-lg shadow-md hover:shadow-xl">
-                <div className="flex justify-between items-center border-b p-4">
-                  <h5 className="font-semibold text-gray-800">Latest Posts</h5>
-                  <button className="p-1 focus:outline-none">
-                    <span className="text-red-500 text-xl">
-                      <IoGrid />
-                    </span>
-                  </button>
+              <div className="bg-white rounded-lg border border-gray-100">
+                <div className="flex justify-between items-center p-4 border-b">
+                  <h5 className="font-medium text-gray-900">Latest Posts</h5>
+                  <IoGrid className="text-gray-400" />
                 </div>
-                <div className="p-4">
-                  <div className="mb-4 last:mb-0">
-                    {posts?.slice(0, 3).map((p, index) => {
-                      return (
-                        <>
-                          <div className="flex items-center" key={index}>
-                            <img
-                              className="rounded-lg object-cover w-24 h-28"
-                              src={p?.image}
-                              alt="product"
-                            />
-                            <div className="ml-3">
-                              <a
-                                href={p?.slug}
-                                className="block font-semibold text-gray-800 hover:underline"
-                              >
-                                {p?.title || "Post Title"}
-                              </a>
-                              <p className="text-sm flex items-center gap-2 text-gray-500 mt-1">
-                                <IoCalendar className="text-blue-500" />
-                                {Moment(p?.created_at)}
-                              </p>
-                              <p className="text-sm flex items-center gap-2 text-gray-500">
-                                <IoEye /> {p?.view} Views
-                              </p>
-                            </div>
-                          </div>
-                          <hr className="my-3" />
-                        </>
-                      );
-                    })}
-                  </div>
+                <div className="divide-y">
+                  {posts?.slice(0, 3).map((p, index) => (
+                    <div className="p-4" key={index}>
+                      <div className="flex gap-4">
+                        <img
+                          className="rounded-lg object-cover w-24 h-28"
+                          src={p?.image}
+                          alt="product"
+                        />
+                        <div>
+                          <a
+                            href={`/details/${p?.slug}`}
+                            className="block font-semibold text-gray-800 hover:underline"
+                          >
+                            {p?.title || "Post Title"}
+                          </a>
+                          <p className="text-sm flex items-center gap-2 text-gray-500 mt-1">
+                            <IoCalendar className="text-blue-500" />
+                            {Moment(p?.created_at)}
+                          </p>
+                          <p className="text-sm flex items-center gap-2 text-gray-500">
+                            <IoEye /> {p?.view} Views
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div className="border-t text-center p-3 h-10 flex items-baseline justify-center  ">
-                  <Link
-                    to="/posts/"
-                    className="text-gray-800  font-semibold hover:underline"
-                  >
+                <div className="p-4 border-t text-center">
+                  <Link to="/posts/" className="text-blue-600 hover:text-blue-700 font-medium">
                     View all Posts
                   </Link>
                 </div>
               </div>
 
               {/* Recent Comments Section */}
-              <div className="md:w-1/2 2xl:w-1/4 bg-white border rounded-lg shadow-md hover:shadow-xl">
-                <div className="flex justify-between items-center border-b p-4">
-                  <h5 className="font-semibold text-gray-800">
-                    Recent Comments
-                  </h5>
-                  <button className="p-1 focus:outline-none">
-                    <IoChatbubbleEllipses className="text-green-500 text-xl" />
-                  </button>
+              <div className="bg-white rounded-lg border border-gray-100">
+                <div className="flex justify-between items-center p-4 border-b">
+                  <h5 className="font-medium text-gray-900">Recent Comments</h5>
+                  <IoChatbubbleEllipses className="text-gray-400" />
                 </div>
-                <div className="p-4">
-                  <div className="mb-4 last:mb-0">
-                    {comment?.slice(0, 3)?.map((c, index) => {
-                      return (
-                        <>
-                          <div className="flex items-center">
-                            <img
-                              className="w-10 h-10 object-cover rounded-md"
-                              src={c?.image || "/comment-user.png"}
-                              alt="avatar"
-                            />
-                            <div className="ml-3">
-                              <a
-                                href="#"
-                                className="block text-lg font-semibold text-gray-800 hover:underline"
-                              >
-                                {c?.comment}
-                              </a>
-                              <p className="text-sm text-gray-500">
-                                <i>by {c?.name || "comenter"}</i>
-                              </p>
-                            </div>
-                          </div>
-                          <hr className="my-3" />
-                        </>
-                      );
-                    })}
-                  </div>
+                <div className="divide-y">
+                  {comment?.slice(0, 3)?.map((c, index) => (
+                    <div className="p-4" key={index}>
+                      <div className="flex gap-4">
+                        <img
+                          className="w-10 h-10 object-cover rounded-full"
+                          src={c?.image || "/comment-user.png"}
+                          alt="avatar"
+                        />
+                        <div>
+                          <p className="text-gray-900">{c?.comment}</p>
+                          <p className="text-sm text-gray-500 mt-1">by {c?.name || "commenter"}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div className="border-t text-center p-3">
-                  <Link
-                    to="/comments/"
-                    className="text-gray-800 font-semibold hover:underline"
-                  >
+                <div className="p-4 border-t text-center">
+                  <Link to="/comments/" className="text-blue-600 hover:text-blue-700 font-medium">
                     View all Comments
                   </Link>
                 </div>
               </div>
 
               {/* Notifications Section */}
-              <div className="md:w-1/2 2xl:w-1/4 bg-white border rounded-lg shadow-md hover:shadow-xl">
-                <div className="flex justify-between items-center border-b p-4">
-                  <h5 className="font-semibold text-gray-800">Notifications</h5>
-                  <button className="p-1 focus:outline-none">
-                    <FaBell className="text-yellow-500 text-xl" />
-                  </button>
+              <div className="bg-white rounded-lg border border-gray-100">
+                <div className="flex justify-between items-center p-4 border-b">
+                  <h5 className="font-medium text-gray-900">Notifications</h5>
+                  <FaBell className="text-gray-400" />
                 </div>
-                <div className="p-4 h-96 overflow-y-auto">
+                <div className="divide-y max-h-[32rem] overflow-y-auto">
                   {noti?.slice(0, 3)?.map((n, index) => (
-                    <div className="col-12" key={index}>
-                      <div className="flex justify-between relative">
-                        <div className="flex items-center">
-                          <div className="bg-opacity-15 rounded-2 flex-shrink-0">
+                    <div className="p-4" key={index}>
+                      <div className="flex gap-4">
+                        <div className="flex-shrink-0 mt-1">
+                          {n?.type === "Like" && <FaThumbsUp className="text-blue-500" />}
+                          {n?.type === "Comment" && <IoChatbubbleEllipses className="text-green-500" />}
+                          {n?.type === "Bookmark" && <BsBookmarkCheckFill className="text-purple-500" />}
+                        </div>
+                        <div>
+                          <h6 className="text-gray-900 font-medium">{n?.type}</h6>
+                          <p className="text-sm text-gray-600 mt-1">
                             {n?.type === "Like" && (
-                              <FaThumbsUp className="text-primary text-xl" />
+                              <span>Someone liked your post <b>{n?.posts?.title?.slice(0, 30)}...</b></span>
                             )}
-                          </div>
-                          <div className="bg-opacity-15 rounded-2 flex-shrink-0">
                             {n?.type === "Comment" && (
-                              <IoChatbubbleEllipses className="text-success text-xl" />
+                              <span>New comment on <b>{n?.posts?.title?.slice(0, 30)}...</b></span>
                             )}
-                          </div>
-                          <div className="bg-opacity-15 rounded-2 flex-shrink-0">
                             {n?.type === "Bookmark" && (
-                              <BsBookmarkCheckFill className="text-danger text-xl" />
+                              <span>Someone bookmarked <b>{n?.posts?.title?.slice(0, 30)}...</b></span>
                             )}
-                          </div>
-                          <div className="ms-0 sm:ms-3 mt-2 sm:mt-0">
-                            <h6 className="mb-0">{n?.type}</h6>
-                            <span className="mb-0">
-                              {n?.type === "Like" && (
-                                <span>
-                                  Someone liked your post{" "}
-                                  <b>{n?.posts?.title?.slice(0, 30) + "..."}</b>
-                                </span>
-                              )}
-                              {n?.type === "Comment" && (
-                                <span>
-                                  You have a new comment on{" "}
-                                  <b>{n?.posts?.title?.slice(0, 30) + "..."}</b>
-                                </span>
-                              )}
-                              {n?.type === "Bookmark" && (
-                                <span>
-                                  Someone bookmarked your post{" "}
-                                  <b>{n?.posts?.title?.slice(0, 30) + "..."}</b>
-                                </span>
-                              )}
-                            </span>
-                            <span className="text-sm"><br></br> {Moment(n.data)} </span>
-                            <br />
+                          </p>
+                          <div className="flex items-center gap-4 mt-2">
+                            <span className="text-sm text-gray-500">{Moment(n.data)}</span>
                             <button
                               onClick={() => handleMarkNotiAsSeen(n?.id)}
-                              className="bg-green-600 text-white rounded-md p-2 mt-2"
+                              className="text-green-600 hover:text-green-700"
+                              title="Mark as read"
                             >
-                              <FaCheckCircle/>
+                              <FaCheckCircle />
                             </button>
                           </div>
                         </div>
                       </div>
-                      <hr className="my-3" />
                     </div>
                   ))}
                 </div>
-                <div className="border-t text-center p-3">
-                  <Link
-                    to="/notification/"
-                    className="text-gray-800 font-semibold hover:underline"
-                  >
+                <div className="p-4 border-t text-center">
+                  <Link to="/notification/" className="text-blue-600 hover:text-blue-700 font-medium">
                     View all Notifications
                   </Link>
                 </div>
               </div>
-            </div>
 
-            <div className="col-span-12">
-              <div className="border bg-transparent rounded-lg">
-                {/* Header */}
-                <div className="bg-transparent border-b p-4 flex justify-between items-center">
-                  <h5 className="text-lg font-semibold">
-                    All Blog Posts
-                    <span className="ml-2 px-2 py-1 text-sm bg-blue-100 text-blue-500 rounded">
-                      5
-                    </span>
-                  </h5>
-                  <button className="bg-blue-600 text-white p-2 flex items-center gap-3 rounded-md shadow-lg font-bold">
-                    Add New <FaPlus />
-                  </button>
-                </div>
-                {/* Search and Filter */}
-                <div className="p-4 grid grid-cols-1 items-center md:grid-cols-2 gap-4 w-full">
-                  <div>
-                    <form className="relative w-full">
-                      <input
-                        type="search"
-                        onChange={(e) => handleSearch(e)}
-                        placeholder="Search Articles"
-                        className="w-full form-input bg-transparent border outline-none p-4 pr-10"
-                      />
-                      <button
-                        type="submit"
-                        onChange={handleSortChange}
-                        className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                      >
-                        <FaSearch />
-                      </button>
-                    </form>
+              {/* Blog List Table Section */}
+              <div className="col-span-1 lg:col-span-3">
+                <div className="border bg-transparent rounded-lg">
+                  {/* Header */}
+                  <div className="bg-transparent border-b p-4 flex justify-between items-center">
+                    <h5 className="text-lg font-semibold">
+                      All Blog Posts
+                      <span className="ml-2 px-2 py-1 text-sm bg-blue-100 text-blue-500 rounded">
+                        5
+                      </span>
+                    </h5>
+                    <button className="bg-blue-600 text-white p-2 flex items-center gap-3 rounded-md shadow-lg font-bold">
+                      Add New <FaPlus />
+                    </button>
                   </div>
-                  <div>
-                    <select className="form-select bg-transparent border p-4 outline-none w-full">
-                      <option value="">Sort by</option>
-                      <option>Newest</option>
-                      <option>Oldest</option>
-                      <option>------</option>
-                      <option>Active</option>
-                      <option>Draft</option>
-                      <option>Disabled</option>
-                    </select>
+                  {/* Search and Filter */}
+                  <div className="p-4 grid grid-cols-1 items-center md:grid-cols-2 gap-4 w-full">
+                    <div>
+                      <form className="relative w-full">
+                        <input
+                          type="search"
+                          onChange={(e) => handleSearch(e)}
+                          placeholder="Search Articles"
+                          className="w-full form-input bg-transparent border outline-none p-4 pr-10"
+                        />
+                        <button
+                          type="submit"
+                          onChange={handleSortChange}
+                          className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                        >
+                          <FaSearch />
+                        </button>
+                      </form>
+                    </div>
+                    <div>
+                      <select className="form-select bg-transparent border p-4 outline-none w-full">
+                        <option value="">Sort by</option>
+                        <option>Newest</option>
+                        <option>Oldest</option>
+                        <option>------</option>
+                        <option>Active</option>
+                        <option>Draft</option>
+                        <option>Disabled</option>
+                      </select>
+                    </div>
                   </div>
-                </div>
 
-                {/* Blog List Table */}
-                <div className="overflow-x-auto">
-                  <table className="table-auto w-full text-left border-collapse">
-                    <thead className="bg-gray-800 text-white">
-                      <tr>
-                        <th className="px-4 py-2">Article Name</th>
-                        <th className="px-4 py-2">Views</th>
-                        <th className="px-4 py-2">Published Date</th>
-                        <th className="px-4 py-2">Category</th>
-                        <th className="px-4 py-2">Status</th>
-                        <th className="px-4 py-2">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {posts?.map((p, index) => (
-                        <tr key={index} className="border-b">
-                          <td className="px-4 py-2">
-                            <a
-                              href="#"
-                              className="text-blue-600 hover:underline"
-                            >
-                              {p?.title}
-                            </a>
-                          </td>
-                          <td className="px-4 py-2"> {p?.view} Views</td>
-                          <td className="px-4 py-2"> {Moment(p.date)} </td>
-                          <td className="px-4 py-2"> {p?.category?.title} </td>
-                          <td className="px-4 py-2">
-                            <span className="bg-green-100 text-green-600 px-2 py-1 text-xs rounded">
-                              {p?.status}
-                            </span>
-                          </td>
-                          <td className="px-4 py-2 flex gap-2">
-                            <button
-                              className="text-red-600 hover:text-red-800"
-                              title="Delete"
-                            >
-                              <FaTrash />
-                            </button>
-                            <button
-                              className="text-blue-600 hover:text-blue-800"
-                              title="Edit"
-                            >
-                              <FaPencil />
-                            </button>
-                          </td>
+                  {/* Blog List Table */}
+                  <div className="overflow-x-auto">
+                    <table className="table-auto w-full text-left border-collapse">
+                      <thead className="bg-gray-800 text-white">
+                        <tr>
+                          <th className="px-4 py-2">Article Name</th>
+                          <th className="px-4 py-2">Views</th>
+                          <th className="px-4 py-2">Published Date</th>
+                          <th className="px-4 py-2">Category</th>
+                          <th className="px-4 py-2">Status</th>
+                          <th className="px-4 py-2">Action</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {posts?.map((p, index) => (
+                          <tr key={index} className="border-b">
+                            <td className="px-4 py-2">
+                              <a
+                                href="#"
+                                className="text-blue-600 hover:underline"
+                              >
+                                {p?.title}
+                              </a>
+                            </td>
+                            <td className="px-4 py-2"> {p?.view} Views</td>
+                            <td className="px-4 py-2"> {Moment(p.date)} </td>
+                            <td className="px-4 py-2"> {p?.category?.title} </td>
+                            <td className="px-4 py-2">
+                              <span className="bg-green-100 text-green-600 px-2 py-1 text-xs rounded">
+                                {p?.status}
+                              </span>
+                            </td>
+                            <td className="px-4 py-2 flex gap-2">
+                              <button
+                                className="text-red-600 hover:text-red-800"
+                                title="Delete"
+                              >
+                                <FaTrash />
+                              </button>
+                              <button
+                                className="text-blue-600 hover:text-blue-800"
+                                title="Edit"
+                              >
+                                <FaPencil />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>

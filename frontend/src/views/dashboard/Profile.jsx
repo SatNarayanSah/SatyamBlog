@@ -30,8 +30,12 @@ function Profile() {
             }
             const response = await apiInstance.get(`/user/profile/${user_id}/`);
             setProfileData(response.data);
+            if (response.data.image) {
+                setImagePreview(response.data.image);
+            }
         } catch (error) {
             console.error("Failed to fetch profile:", error);
+            Toast("error", "Failed to fetch profile data");
         }
     };
 
@@ -47,6 +51,14 @@ function Profile() {
     const handleFileChange = (event) => {
         const selectedFile = event.target.files[0];
         if (selectedFile) {
+            if (!selectedFile.type.match(/^image\/(jpeg|jpg|png)$/)) {
+                Toast("error", "Please select a valid image file (JPG or PNG)");
+                return;
+            }
+            if (selectedFile.size > 800 * 1024) {
+                Toast("error", "Image size should be less than 800KB");
+                return;
+            }
             setProfileData({ ...profileData, image: selectedFile });
             const reader = new FileReader();
             reader.onload = () => {
@@ -60,28 +72,44 @@ function Profile() {
     const handleFormSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        const formdata = new FormData();
-
-        // Only append image if it's a new file
-        if (profileData.image instanceof File) {
-            formdata.append("image", profileData.image);
-        }
-
-        // Append other fields
-        formdata.append("full_name", profileData.full_name);
-        formdata.append("about", profileData.about);
-        formdata.append("bio", profileData.bio);
-        formdata.append("country", profileData.country);
-        formdata.append("facebook", profileData.facebook);
-        formdata.append("twitter", profileData.twitter);
-
+        
         try {
-            await apiInstance.patch(`/user/profile/${user_id}/`, formdata);
-            Toast("success", "Profile Updated Successfully");
-            fetchProfile(); // Refresh profile data
+            const formdata = new FormData();
+
+            if (profileData.image instanceof File) {
+                formdata.append("image", profileData.image);
+            }
+
+            if (!profileData.full_name?.trim()) {
+                throw new Error("Full name is required");
+            }
+
+            Object.keys(profileData).forEach(key => {
+                if (key !== 'image' && profileData[key]) {
+                    formdata.append(key, profileData[key]);
+                }
+            });
+
+            const response = await apiInstance.patch(
+                `/user/profile/${user_id}/`,
+                formdata,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }
+            );
+
+            if (response.status === 200) {
+                Toast("success", "Profile Updated Successfully");
+                await fetchProfile(); // Refresh profile data
+            }
         } catch (error) {
-            console.error("Error updating profile:", error.response?.data || error);
-            Toast("error", "Failed to update profile. Please try again.");
+            console.error("Error updating profile:", error);
+            Toast(
+                "error", 
+                error.response?.data?.message || error.message || "Failed to update profile. Please try again."
+            );
         } finally {
             setLoading(false);
         }

@@ -87,9 +87,18 @@ class NotificationSerializer(serializers.ModelSerializer):
 
 class PostSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True)
+    user_profile = serializers.SerializerMethodField()
+
+    def get_user_profile(self, obj):
+        return {
+            'image': obj.user.profile.image.url if obj.user.profile.image else None,
+            'full_name': obj.user.profile.full_name,
+        }
+
     class Meta:
         model = api_models.Post
         fields = "__all__"
+
     def __init__(self, *args, **kwargs):
         super(PostSerializer, self).__init__(*args, **kwargs)
         request = self.context.get("request")
