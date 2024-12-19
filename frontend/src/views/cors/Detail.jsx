@@ -36,18 +36,16 @@ function Detail() {
   const sanitizedHTML = DOMPurify.sanitize(post.description);
 
   const handleCreateCommentChanage = (event) => {
-    
-    const {name,value} = event.target;
-    console.log(name,value);
-    setCreateComment(prevState => ({
+    const { name, value } = event.target;
+    console.log(name, value);
+    setCreateComment((prevState) => ({
       ...prevState,
-      [name]: value
+      [name]: value,
     }));
   };
   const handleCreateCommentSubmit = async (event) => {
     console.log(event);
     console.log(createComment);
-
 
     event.preventDefault();
 
@@ -90,7 +88,7 @@ function Detail() {
   return (
     <>
       <Header />
-      <section className="mt-5">
+      {/* <section className="mt-5">
         <div className="container mx-auto px-4">
           <div className="row">
             <div className="col-12">
@@ -105,7 +103,7 @@ function Detail() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       <section className="pt-0">
         <div className="container mx-auto px-4">
@@ -116,7 +114,7 @@ function Detail() {
                   <div className="avatar flex justify-center avatar-xl">
                     <img
                       className="avatar-img w-24 h-24 object-cover rounded-full"
-                      src={post?.profile?.image}
+                      src={post?.user?.image}
                       alt="avatar"
                     />
                   </div>
@@ -188,12 +186,32 @@ function Detail() {
             {/* Left sidebar END */}
 
             {/* Main Content START */}
-            <div className="lg:w-10/12 mb-5 text-justify">
-            <div>
-              <img 
-              className="flex items-center justify-center w-full rounded-lg"
-              src={post.image} alt="" />
-            </div>
+            <div className="lg:w-10/12 w-full mb-5 text-justify">
+              <section className="mt-5">
+                <div className="container mx-auto px-4">
+                  <div className="row">
+                    <div className="col-12">
+                      <a
+                        href="#"
+                        className="badge bg-red-500 mb-2 text-decoration-none text-white"
+                      >
+                        <i className="small font-bold " />
+                        Lifestyle
+                      </a>
+                      <h1 className="text-center text-blue-800 text-3xl font-bold">
+                        {post.title}
+                      </h1>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <div className="flex items-center justify-center">
+                <img
+                  className="flex items-center mt-8 justify-center text- w-3/4 h-3/4 rounded-lg"
+                  src={post.image}
+                  alt=""
+                />
+              </div>
               {post.description}
 
               <div className="mt-5">

@@ -155,7 +155,7 @@ const index = () => {
                       alt="Card"
                       className="w-full h-40 object-fit"
                     />
-                    <div className="absolute bg-white top-3 right-3 p-2 rounded-md text-lg font-bold text-blue-500">
+                    <div className="absolute bg-white  top-3 right-3 p-2 rounded-md text-lg font-bold text-blue-500">
                       {post?.category?.title}
                     </div>
                   </div>
@@ -194,27 +194,32 @@ const index = () => {
                 </div>
               ))}
             </div>
-
-            <div className=" p-5 h-fit shadow-xl rounded-lg overflow-hidden w-1/5">
-              <form className="w-full max-w-sm">
+            <div className="w-1/5 flex flex-col gap-4">
+              <div className=" p-5 h-fit shadow-xl rounded-lg overflow-hidden ">
+                <form className="w-full max-w-sm">
                   {/* <label htmlFor="search">Search Posts</label> */}
-                <div className="flex flex-wrap justify-center items-center border-b border-teal-500 py-2">
-                  <input
-                    className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-blue-500"
-                    type="text"
-                    onChange={(e) => handleSearch(e)}
-                    placeholder="Search Posts"
-                    aria-label="Full name"
-                  />
-                  <button
-                    className="flex items-center gap-3 mt-5 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-white py-1 px-2 rounded"
-                    type="button"
-                  >
-                    Search <FaSearch />
-                  </button>
-                 
+                  <div className="flex flex-wrap justify-center items-center border-b border-teal-500 py-2">
+                    <input
+                      className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-blue-500"
+                      type="text"
+                      onChange={(e) => handleSearch(e)}
+                      placeholder="Search Posts"
+                      
+                    />
+                    <button
+                      className="flex items-center gap-3 mt-5 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-white py-1 px-2 rounded"
+                      type="button"
+                    >
+                      Search <FaSearch />
+                    </button>
+                  </div>
+                </form>
+              </div>
+              <div className="shadow-xl p-4 rounded-lg">new posts
+                <div>
+                  {postItems.title}
                 </div>
-              </form>
+              </div>
             </div>
           </div>
           <nav className="flex justify-between items-center mt-6">

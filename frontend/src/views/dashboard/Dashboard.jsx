@@ -54,7 +54,27 @@ function Dashboard() {
     );
     setNoti(noti_res?.data);
   };
-
+  const handleSearch = (e) => {
+    const query = e.target.value.toLowerCase();
+    if (query === "") {
+      posts();
+    } else {
+      const filtered = posts.filter((p) => {
+        return p.title.toLowerCase().includes(query);
+      });
+      setPosts(filtered);
+    }
+  };
+  const handleSortChange = (e) => {
+    const sortValue = e.target.value;
+    const sortedPosts = [...posts];
+    if (sortValue === "Newest") {
+      sortedPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
+    } else if (sortValue === "Oldest") {
+      sortedPosts.sort((a, b) => new Date(a.date) - new Date(b.date));
+    }
+    setPosts(sortedPosts);
+  };
   useEffect(() => {
     fetchDashboardData();
   }, []);
@@ -340,11 +360,13 @@ function Dashboard() {
                     <form className="relative w-full">
                       <input
                         type="search"
+                        onChange={(e) => handleSearch(e)}
                         placeholder="Search Articles"
                         className="w-full form-input bg-transparent border outline-none p-4 pr-10"
                       />
                       <button
                         type="submit"
+                        onChange={handleSortChange}
                         className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
                       >
                         <FaSearch />

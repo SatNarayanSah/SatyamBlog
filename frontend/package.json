@@ -27,6 +27,7 @@
     "react-icons": "^4.12.0",
     "react-photo-album": "^2.3.0",
     "react-router-dom": "6.10.0",
+    "react-toastify": "^11.0.1",
     "sweetalert2": "^11.7.32",
     "yet-another-react-lightbox": "^3.14.0",
     "zustand": "^4.4.4"

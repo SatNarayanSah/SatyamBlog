@@ -1,39 +1,41 @@
 import React, { useEffect, useState } from "react";
 import Header from "../partials/Header";
 import Footer from "../partials/Footer";
-import { Link } from "react-router-dom";
-import {  FaUserGear } from "react-icons/fa6";
+import { FaUserGear } from "react-icons/fa6";
 import { SiCheckmarx } from "react-icons/si";
 import useUserData from "../../plugin/useUserData";
 import apiInstance from "../../utils/Axios";
-import Toast from "../../plugin/Toast"
+import Toast from "../../plugin/Toast";
 
 function Profile() {
-
-      const [profileData, setProfileData] = useState({
+    const [profileData, setProfileData] = useState({
         image: null,
         full_name: "",
         about: "",
         bio: "",
         country: "",
+        facebook: "",
+        twitter: ""
     });
     const user_id = useUserData()?.user_id;
-
     const [imagePreview, setImagePreview] = useState("");
     const [loading, setLoading] = useState(false);
 
+    // Fetch profile data
     const fetchProfile = async () => {
         try {
-            const response = await apiInstance.get(`/user/profile/${user_id}/`)
-        setProfileData(response.data)
+            if (!user_id) {
+                console.error("User ID is missing.");
+                return;
+            }
+            const response = await apiInstance.get(`/user/profile/${user_id}/`);
+            setProfileData(response.data);
         } catch (error) {
-            console.log(error);
-            
+            console.error("Failed to fetch profile:", error);
         }
     };
 
-  
-
+    // Handle profile data changes
     const handleProfileChange = (event) => {
         setProfileData({
             ...profileData,
@@ -41,53 +43,58 @@ function Profile() {
         });
     };
 
+    // Handle image file change and preview
     const handleFileChange = (event) => {
         const selectedFile = event.target.files[0];
-        setProfileData({
-            ...profileData,
-            [event.target.name]: selectedFile,
-        });
-
-        const reader = new FileReader();
-        reader.onload = () => {
-            setImagePreview(reader.result);
-        };
         if (selectedFile) {
+            setProfileData({ ...profileData, image: selectedFile });
+            const reader = new FileReader();
+            reader.onload = () => {
+                setImagePreview(reader.result);
+            };
             reader.readAsDataURL(selectedFile);
         }
     };
 
+    // Handle form submission
     const handleFormSubmit = async (e) => {
         e.preventDefault();
-    
+        setLoading(true);
         const formdata = new FormData();
-        
-        // Only add image if it's a new file
+
+        // Only append image if it's a new file
         if (profileData.image instanceof File) {
             formdata.append("image", profileData.image);
         }
-        
+
         // Append other fields
         formdata.append("full_name", profileData.full_name);
         formdata.append("about", profileData.about);
         formdata.append("bio", profileData.bio);
         formdata.append("country", profileData.country);
-    
+        formdata.append("facebook", profileData.facebook);
+        formdata.append("twitter", profileData.twitter);
+
         try {
-            const res = await apiInstance.patch(`/user/profile/${user_id}/`, formdata);
+            await apiInstance.patch(`/user/profile/${user_id}/`, formdata);
             Toast("success", "Profile Updated Successfully");
             fetchProfile(); // Refresh profile data
         } catch (error) {
-            console.error("Error updating profile:", error);
+            console.error("Error updating profile:", error.response?.data || error);
             Toast("error", "Failed to update profile. Please try again.");
+        } finally {
+            setLoading(false);
         }
     };
-    
-    
+
+    // Use effect to fetch profile data on mount
     useEffect(() => {
-        fetchProfile();
-    }, []);
-    console.log(profileData);
+        if (user_id) {
+            fetchProfile();
+        } else {
+            console.error("User ID is missing.");
+        }
+    }, [user_id]);
 
     return (
         <>
@@ -121,7 +128,6 @@ function Profile() {
                                                     type="file"
                                                     className="mt-3 block w-full border border-gray-300 rounded-md px-3 py-2"
                                                     name="image"
-                                                    id=""
                                                     onChange={handleFileChange}
                                                 />
                                             </div>
@@ -131,14 +137,12 @@ function Profile() {
                                     {/* Personal Details Section */}
                                     <div>
                                         <h4 className="text-lg font-semibold flex items-center">
-                                         <FaUserGear   className="text-blue-700"/> Personal Details
+                                            <FaUserGear className="text-blue-700" /> Personal Details
                                         </h4>
                                         <p className="text-sm text-gray-500 mt-2">Edit your personal information and address.</p>
                                         <div className="space-y-4 mt-4">
                                             <div>
-                                                <label className="block text-sm font-medium" htmlFor="fname">
-                                                    Full Name
-                                                </label>
+                                                <label className="block text-sm font-medium" htmlFor="fname"> Full Name </label>
                                                 <input
                                                     type="text"
                                                     name="full_name"
@@ -150,9 +154,7 @@ function Profile() {
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-medium" htmlFor="bio">
-                                                    Bio
-                                                </label>
+                                                <label className="block text-sm font-medium" htmlFor="bio"> Bio </label>
                                                 <input
                                                     type="text"
                                                     name="bio"
@@ -164,9 +166,7 @@ function Profile() {
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-medium" htmlFor="aboutMe">
-                                                    About Me
-                                                </label>
+                                                <label className="block text-sm font-medium" htmlFor="aboutMe"> About Me </label>
                                                 <textarea
                                                     id="aboutMe"
                                                     name="about"
@@ -178,9 +178,7 @@ function Profile() {
                                                 ></textarea>
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-medium" htmlFor="country">
-                                                    Country
-                                                </label>
+                                                <label className="block text-sm font-medium" htmlFor="country"> Country </label>
                                                 <input
                                                     type="text"
                                                     name="country"
@@ -191,24 +189,48 @@ function Profile() {
                                                     required
                                                 />
                                             </div>
+                                            {/* Social Media Links Section */}
+                                            <div>
+                                                <label className="block text-sm font-medium" htmlFor="facebook"> Facebook </label>
+                                                <input
+                                                    type="text"
+                                                    name="facebook"
+                                                    value={profileData?.facebook || ""}
+                                                    onChange={handleProfileChange}
+                                                    className="mt-2 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                                                    placeholder="Enter your Facebook link"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium" htmlFor="twitter"> Twitter... </label>
+                                                <input
+                                                    type="text"
+                                                    name="twitter"
+                                                    value={profileData?.twitter || ""}
+                                                    onChange={handleProfileChange}
+                                                    className="mt-2 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                                                    placeholder="Enter your Twitter link"
+                                                />
+                                            </div>
                                             <div className="mt-4">
-                                                <button
-                                                    type="button"
-                                                    onClick={handleFormSubmit}
-                                                    className="w-full sm:w-auto px-6 py-3 uppercase flex items-center gap-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600"
-                                                >
-                                                    Update Profile <SiCheckmarx />
+                                                <button 
+                                                  type='submit' 
+                                                  onClick={handleFormSubmit} 
+                                                  className={`w-full sm:w-auto px-6 py-3 uppercase flex items-center gap-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`} 
+                                                  disabled={loading}>
+                                                  {loading ? "Updating..." : "Update Profile"} 
+                                                  <SiCheckmarx />
                                                 </button>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            <Footer />
+                            </div> 
+                        </div> 
+                    </div> 
+                </div> 
+            </section> 
+            <Footer /> 
         </>
     );
 }

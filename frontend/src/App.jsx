@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Route, Routes, BrowserRouter } from "react-router-dom";
-import Index from "./views/cors/";
+import Index from "./views/cors/Index";
 import About from "./views/pages/About";
 import Contact from "./views/pages/Contact";
 import Register from "./views/auth/Register";

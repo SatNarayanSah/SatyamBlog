@@ -4,7 +4,9 @@ import Footer from "../partials/Footer";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/Auth";
 import { register } from "../../utils/auth";
-import {  FaSpinner, FaUserPlus } from "react-icons/fa6";
+import { FaSpinner, FaUserPlus } from "react-icons/fa6";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Register() {
   const [biodata, setBioData] = useState({
@@ -35,142 +37,162 @@ function Register() {
     e.preventDefault();
     setIsLoading(true);
 
-    const { error } = register(
-      biodata.full_name,
-      biodata.email,
-      biodata.password,
-      biodata.password2
-    );
-    if (error) {
-      alert(JSON.stringify(error));
-    } else {
-      navigate("/");
+    if (biodata.password !== biodata.password2) {
+      toast.error("Passwords do not match!");
+      setIsLoading(false);
+      return;
     }
-    setIsLoading(false);
+
+    try {
+      const { error } = await register(
+        biodata.full_name,
+        biodata.email,
+        biodata.password,
+        biodata.password2
+      );
+      
+      if (error) {
+        toast.error(error.message || "Registration failed");
+      } else {
+        toast.success("Registration successful!");
+        resetForm();
+        navigate("/");
+      }
+    } catch (error) {
+      toast.error("Registration failed. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <>
       <Header />
-      <section className="container mx-auto flex flex-col h-[69vh]  justify-center mt-12 px-4 md:mt-36">
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat filter blur-md"
-          style={{ backgroundImage: 'url("/register-bg-image.jpg")' }}
-        ></div>
-        <div className="flex relative z-10 justify-center items-center">
-          <div className="w-full max-w-sm md:max-w-md bg-gray-300 bg-opacity-10 bg-blur shadow-lg rounded-lg p-6 md:p-8">
-            <div className="mb-6 text-center">
-              <h1 className="text-3xl md:text-2xl font-bold tracking-widest text-white bg-green-900 p-2 rounded-md mb-2">
-                Sign up
+      <ToastContainer position="top-right" autoClose={3000} />
+      <section
+        className="h-[84vh] bg-cover bg-center bg-no-repeat relative"
+        style={{ backgroundImage: "url('/loginpage.jpg')" }}
+      >
+        {/* Background Blur Overlay */}
+        <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-md"></div>
+
+        <div className="container mx-auto px-4 relative z-10 flex items-center justify-center h-full">
+          <div className="bg-white bg-opacity-10 rounded-lg shadow-lg p-6 w-full max-w-md">
+            {/* Header Section */}
+            <div className="mb-4 text-center">
+              <h1 className="text-2xl text-white bg-green-900 p-2 rounded-md shadow-lg tracking-widest font-bold">
+                Create Account
               </h1>
-              <span className="text-md text-white shadow-xl">
-                Already have an account?
-                <Link
-                  to="/login/"
-                  className="text-white font-bold p-2 rounded-md tracking-widest ml-1 hover:underline"
-                >
+              <p className="text-white mt-5">
+                Already have an account?{" "}
+                <Link to="/login" className="text-white font-bold p-2 tracking-widest hover:underline ml-1">
                   Sign In
                 </Link>
-              </span>
+              </p>
             </div>
-            {/* Form */}
-            <form
-              onSubmit={handleRegister}
-              className="space-y-4 z-100"
-              noValidate
-            >
-              {/* Full Name */}
+
+            <form className="space-y-4" onSubmit={handleRegister} noValidate>
+              {/* Full Name Input */}
               <div>
-                <label
-                  htmlFor="full_name"
-                  className="tracking-widest text-xl font-medium text-white"
-                >
+                <label htmlFor="full_name" className="block font-medium text-white text-xl tracking-widest">
                   Full Name
                 </label>
                 <input
-                  type="text"
-                  onChange={handleBioDataChange}
-                  value={biodata.full_name}
                   id="full_name"
                   name="full_name"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm outline-none p-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  placeholder="John Doe"
+                  type="text"
                   required
+                  value={biodata.full_name}
+                  onChange={handleBioDataChange}
+                  className="w-full border border-gray-300 rounded-md p-2 outline-none focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="John Doe"
                 />
               </div>
-              {/* Email */}
+
+              {/* Email Input */}
               <div>
-                <label
-                  htmlFor="email"
-                  className="tracking-widest text-xl font-medium text-white"
-                >
+                <label htmlFor="email" className="block font-medium text-white text-xl tracking-widest">
                   Email Address
                 </label>
                 <input
-                  onChange={handleBioDataChange}
-                  value={biodata.email}
-                  type="email"
                   id="email"
                   name="email"
-                  className="mt-1 block w-full rounded-md outline-none p-3 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  placeholder="johndoe@gmail.com"
+                  type="email"
                   required
+                  value={biodata.email}
+                  onChange={handleBioDataChange}
+                  className="w-full border border-gray-300 rounded-md p-2 outline-none focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="you@example.com"
                 />
               </div>
-              {/* Password */}
+
+              {/* Password Input */}
               <div>
-                <label
-                  htmlFor="password"
-                  className="tracking-widest text-xl  font-medium text-white"
-                >
+                <label htmlFor="password" className="block font-medium text-white text-xl tracking-widest">
                   Password
                 </label>
                 <input
-                  onChange={handleBioDataChange}
-                  value={biodata.password}
-                  type="password"
                   id="password"
                   name="password"
-                  className="mt-1 block w-full rounded-md outline-none p-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  placeholder="**************"
+                  type="password"
                   required
+                  value={biodata.password}
+                  onChange={handleBioDataChange}
+                  className="w-full border border-gray-300 rounded-md p-2 outline-none focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="••••••••"
                 />
               </div>
+
+              {/* Confirm Password Input */}
               <div>
-                <label
-                  htmlFor="confirm_password"
-                  className="tracking-widest text-xl  font-medium text-white"
-                >
+                <label htmlFor="password2" className="block font-medium text-white text-xl tracking-widest">
                   Confirm Password
                 </label>
                 <input
-                  type="password"
-                  onChange={handleBioDataChange}
-                  value={biodata.password2}
-                  id="confirm_password"
+                  id="password2"
                   name="password2"
-                  className="mt-1 block w-full rounded-md border-gray-300 outline-none p-3 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  placeholder="**************"
+                  type="password"
                   required
+                  value={biodata.password2}
+                  onChange={handleBioDataChange}
+                  className="w-full border border-gray-300 rounded-md p-2 outline-none focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="••••••••"
                 />
               </div>
-              <div>
-                {isLoading === true ? (
-                  <button
-                    type="submit"
-                    disabled
-                    className="w-full flex items-center gap-2 justify-center py-2 px-4 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                  >
-                    Processing <FaSpinner />
-                  </button>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={isLoading}
+                className={`w-full py-2 rounded-lg ${
+                  isLoading
+                    ? "bg-blue-400 cursor-not-allowed"
+                    : "bg-blue-600 hover:bg-blue-700"
+                } text-white focus:ring-4 focus:ring-blue-300 flex items-center justify-center`}
+              >
+                {isLoading ? (
+                  <>
+                    <FaSpinner className="animate-spin mr-2 h-5 w-5" />
+                    Creating account...
+                  </>
                 ) : (
-                  <button
-                    type="submit"
-                    className="w-full flex items-center gap-2 justify-center py-2 px-4 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                  >
-                    Sign Up <FaUserPlus />
-                  </button>
+                  <>
+                    Create Account
+                    <FaUserPlus className="ml-2 h-5 w-5" />
+                  </>
                 )}
+              </button>
+
+              {/* Terms and Privacy */}
+              <div className="text-center text-sm text-white mt-4">
+                By creating an account, you agree to our{" "}
+                <a href="#" className="font-medium hover:underline">
+                  Terms of Service
+                </a>{" "}
+                and{" "}
+                <a href="#" className="font-medium hover:underline">
+                  Privacy Policy
+                </a>
               </div>
             </form>
           </div>
